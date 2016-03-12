@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>37爱心互动-欢迎您</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link href="6.css" rel="stylesheet" />
+<script src="base.js"></script>
+<script src="6.js"></script>
+<script src="/api/37/myinfo?cb=ca"></script>
+<section id="info">
+<a onclick="my.init()">&nbsp;</a>
+<div>
+<h4 class="username">手机</h4>
+<span class="wechat">微信</span>
+</div>
+</section>
+<section id="main">
+<div class="platform">
+<article>
+<h2 id="income" ref=0>0</h2>
+</article>
+
+<ol class="todo">
+<li>
+<input type="checkbox" /><i>18620131415</i><b>abcd245021_df</b><u>xxxSrer</u>
+<p>2016-01-18 15:23</p><em>金额</em><a href="#">确定</a></li>
+
+</ol>
+<div class="about">
+<a href="regulation.html#a">游戏规则</a><a href="regulation.html#b">操作说明</a><a href="regulation.html#c" style="border:none;">帮助</a>
+</div>
+</div>
+</section>
+<section id="my">
+<div id="myFriendster"></div>
+<a class="button" onclick="my.edit()">修改个人信息</a>
+<div class="platform">
+<form id="edit">
+<label for="Mobile">手机</label>
+<input id="Mobile" class="not" name="Mobile" type="text" placeholder="手机" readonly/>
+<label for="Wechat">微信</label>
+<input id="Wechat" name="Wechat" type="text" placeholder="微信" />
+<label for="Alias">昵称</label>
+<input id="Alias" name="Alias" type="text" placeholder="建议填写微信昵称" />
+<label for="Alipay">支付宝</label>
+<input id="Alipay" name="Alipay" type="text" placeholder="支付宝" />
+<label for="QQ">QQ</label>
+<input id="QQ" name="QQ" type="text" placeholder="QQ" />
+<label for="Email">邮箱</label>
+<input id="Email" name="Email" type="text" placeholder="邮箱" />
+<label for="City">城市</label>
+<input id="City" name="City" type="text" placeholder="城市" />
+<a class="button subBtn" onclick="my.update()">提交</a>
+</form>
+</div>
+<a class="button top20 gray" onclick="my.exit()">退出登录</a>
+</section>

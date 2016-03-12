@@ -1,0 +1,103 @@
+html,body,ul,ol,li,input,button,div,a{ 
+	  
+		list-style-type: none;
+		 border-width: 0; 
+		 padding: 0px; margin: 0px; 
+		 font-size: 1em;
+		 font-family: Arial, 'Microsoft YaHei';
+		  font-weight: lighter !important; 
+		  color: #FF8405;
+		   outline: none;
+		   text-decoration: none;
+}
+
+.button {
+			margin: 0px 5px;
+			padding: 10px 20px;
+			cursor: pointer;
+			background-color: red;
+			display: inline-block;
+}
+
+#installChrome 
+{
+    background-color: #FFF8A5;
+    text-align: center;
+    padding: 3em 0.5em;
+    display: none;
+    
+}
+
+#installChrome a
+{
+    text-decoration: underline;
+    color: blue;
+    
+}
+
+
+#in { display: none; }
+.userinfo {     text-align: center; }
+.platform {
+	width: 100%;
+	height: auto;
+	min-height: 5em;
+}
+
+
+
+.button{
+	 text-decoration: none;
+	border-radius: 1em;
+    color: white;
+	outline: none;
+	cursor: pointer;
+	display: block;
+	width: 4em;	
+	text-align: center;
+	font-size:  1.2em;
+	background-color: #FF8405;
+	margin: 1em auto 0em auto;
+    -webkit-user-select: none;
+	
+}
+ .platform .other {
+ background-color: #eee;	
+}
+ .platform .exit {
+ background-color: #828282;	
+}
+
+.about {
+	text-align: center;
+	border-top: 3px #EFC4A6 solid;
+	padding: 0.5em;
+        margin-top: 1em;
+        -webkit-user-select: none;
+	
+}
+
+.about a {
+	width: 32%;
+	border-right: solid 1px #4E340C;
+	font-size: 1.2em;
+	display: inline-block;
+	
+	 
+}
+
+.platform  input {
+  border: solid white 1px;
+  border-bottom: solid #EFC4A6 1px;
+  display: block;
+  width: 90%;
+  max-width: 12em;
+  height: 1.6em;
+  text-indent: 5px;
+   font-size: 1.2em;
+   margin: 0px auto;
+   margin-top: 10px;
+     
+}
+
+ 

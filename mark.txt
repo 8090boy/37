@@ -1,0 +1,6 @@
+
+Ki_8%lIk5
+SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Ki_8%lIk5');
+
+124.173.68.232
+ce994b9616

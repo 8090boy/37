@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <script src="base.js"></script>
+    <style>
+        * {
+            font-family: Arial, 'Microsoft YaHei';
+            font-weight: lighter;
+        }
+        html { background-color: #FFF3D0; }
+        html,
+        body,
+        input,
+        h2 {
+            border: none;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        h2 {
+            text-align: center;
+            padding: 1em 0em 0em 0em;
+            font-size: 2em;
+            color: #E47E00;
+    font-weight: bold;
+        }
+        
+        form {
+            padding: 1em 0em 0em;
+        }
+        
+        input {
+            text-indent: 0.5em;
+            border-bottom: 2px solid #ddd;
+            display: block;
+            width: 80%;
+            height: 2em;
+            line-height: 2em;
+            font-size: 1.4em;
+            margin: 0.5em auto 0.5em auto;
+        }
+        
+        .submit {
+            border: none;
+            margin: 0em auto;
+            margin-top: 2em;
+            text-indent: 0.5em;
+                color: white;
+            background-color: #FF8D00;
+            display: block;
+            width: 80%;
+            height: 2em;
+            text-align: center;
+            line-height: 2em;
+            font-size: 1.4em;
+        }
+        
+        .more {
+            width: 80%;
+            margin: 0.5em auto;
+        }
+        
+        .more a {
+            padding: 0.5em 0.5em;
+            display: inline-block;
+            font-size: 1.2em;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .more a:hover {
+            text-decoration: underline;
+            color: blue;
+        }
+        
+        #installChrome {
+            background-color: #FFF8A5;
+            text-align: center;
+            padding: 3em 0.5em;
+            display: none;
+        }
+        
+        #installChrome a {
+            text-decoration: underline;
+            color: blue;
+        }
+        
+        .icp {
+            color: #999;
+            text-align: center;
+        }
+        
+    </style>
+
+</head>
+
+<body>
+    <section id="installChrome">
+        您的浏览器很一般哦！
+        <br>推荐使用主流的&nbsp;&nbsp;<a href="https://m.baidu.com/s?from=1012486i&word=TQgTs%2BZNVFZuJ7HfK02WjiBZFEXnkzl3dIh9qWXgBzNCwFH2D3cEV%2F9z6%2BtUWtKIlcdw4rlNWRgLA3%2FmGfCQ0g%3D%3D&sa=kf&cki=1null">Chrome浏览器，立即下载并安装</a>        。
+    </section>
+    <h2>登&nbsp;录</h2>
+    <form id="login">
+        <input type="text" placeholder="手机/邮箱" name="username" />
+        <input type="text" placeholder="密码" name="password"   />
+        <input type="hidden" name="redirecturl" />
+        <a class="submit" onclick="commit()">确定</a>
+    </form>
+    <div class="more"><a href="restore.html">忘记密码！</a></div>
+    <h5 class="icp" >永久域名：www.3737.io<br>©2016&nbsp;&nbsp;37爱心互动平台&nbsp;&nbsp;&nbsp;闽ICP备16004936号</h5>
+    <script>
+        var redurl = location.search.split('redirectUrl=')[1]
+        document.querySelector('input[name="redirecturl"]').value = redurl
+    if (!(window.navigator.userAgent.indexOf("Chrome") > -1) && !(window.navigator.userAgent.indexOf("Safari") > -1)) {
+     document.getElementById('installChrome').style.display='block'
+    }
+
+    // 登录提交
+    function commit(e){
+         var url = '/api/sso/login'
+        var data = CompForm("login")
+        var e = window.event || arguments.callee.caller.arguments[0]
+        var el = e.srcElement || e.target
+        ajax.POST(url, data, loginResult.bind(this,el) )
+        el.style.display='none'
+    }
+    
+    // 登录结果
+     function loginResult(el,msg){
+         switch (msg) {
+             case 1:
+             alert("提交方法不对!")
+            el.style.display='block'
+             break;
+             case 2:
+             el.style.display='block'
+             alert("非法登录!")
+             break;
+             case 3:
+             el.style.display='block'
+             alert("手机号错误或不存在!")
+             break;
+             case 4:
+             el.style.display='block'
+             alert("密码错误!")
+             break;
+             default:
+             var obj = eval( '('+ msg + ')')
+             cookie.Set( "token", obj.token, obj.overdue )
+            location.href='/?token='+obj.token+'&overdue='+obj.overdue
+             break;
+         }
+    }
+    </script>
+</body>
+
+</html>

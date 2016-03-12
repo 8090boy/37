@@ -1,0 +1,101 @@
+html,body,ul,ol,li,input,button,div,a{ 
+	  
+		list-style-type: none;
+		 border-width: 0; 
+		 padding: 0px; margin: 0px; 
+		 font-size: 1em;
+		 font-family: Arial, 'Microsoft YaHei';
+		  font-weight: lighter !important; 
+		  color: #4E340C;
+		   outline: none;
+		   text-decoration: none;
+}
+.about {
+	text-align: center;
+	border-bottom: 3px #EFC4A6 solid;
+ top: 0px;
+ padding-top: 1em;
+ padding-bottom: 1em;
+    -webkit-user-select: none;
+    position: fixed;
+    width: 100%;
+    height: auto;
+    z-index: 10;
+    background-color: white;
+	
+}
+
+.about a {
+	width: 32%;
+	border-right: solid 1px #4E340C;
+	font-size: 1.2em;
+	display: inline-block;
+	
+	 
+}
+ 
+ section
+  {
+      padding-left: 2em;
+     padding-right: 2em; 
+ }
+ section.a 
+ {
+         text-indent: -0.8em;     
+ }
+ 
+ h3
+ {
+ padding-top: 3em;
+ color: #C78100;    
+ text-align: center; 
+ }
+ 
+section p {
+    font-size: 0.8em;
+    color: #333;
+ }
+ 
+ section.b p,
+ section.c p
+  {
+    margin: 0px;
+    text-indent: 1em;
+ }
+ 
+  section.c
+  {
+    margin-bottom: 6em;
+ }
+ 
+section h4
+{
+    margin: 0.2px 0px;
+    margin-top: 2em;
+    
+}
+
+div.bottom
+{
+    width: 100%;
+    height: auto;  
+    padding: 0.5em 0em;  
+    position: fixed;
+    bottom: 0px;
+    background-color: white
+}
+
+div.bottom a
+{
+    display: block;
+    width: 60%;
+    height: 2em;
+    margin: 0px auto;
+    line-height: 2em;
+    text-align: center;
+    font-size: 1.4em; 
+    background-color: #c78100;
+    border-radius: 2em;
+    color: white;  
+    cursor: pointer; 
+}

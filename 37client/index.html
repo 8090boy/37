@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+     <title>37爱心互动-欢迎您</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link href="index.html.css" rel="stylesheet" />
+    <script src="base.js"></script>
+    <script src="index.html.js"></script>
+</head>
+
+<body>
+    <section id="installChrome">
+        您的浏览器很一般哦！
+        <br>推荐使用主流的&nbsp;&nbsp;<a href="https://m.baidu.com/s?from=1012486i&word=TQgTs%2BZNVFZuJ7HfK02WjiBZFEXnkzl3dIh9qWXgBzNCwFH2D3cEV%2F9z6%2BtUWtKIlcdw4rlNWRgLA3%2FmGfCQ0g%3D%3D&sa=kf&cki=1null">Chrome浏览器，立即下载并安装</a>        。
+    </section>
+    <section id="index">
+        <h2 class="userinfo">Welcome to <span class="username" ></span><br/> 37 platform</h2>
+        <div class="platform">
+            <a class="button 37" onclick="inn.join()">37互动</a>
+            <a class="button other">其它游戏</a>
+            <a class="button exit" onclick="inn.exit()">退出</a>
+        </div>
+    </section>
+
+    <section id="in">
+        <div class="userinfo">
+            <h2>注册会员.<a href="/"  >登录</a></h2>
+        </div>
+        <div class="platform">
+            <form id="post">
+                <input type="hidden" placeholder="推荐人" name="referrerId" readonly />
+                <input type="text" placeholder="手机(11位数字)" name="mobile" />
+                <input type="text" placeholder="微信(至少6位)" name="wechat" />
+                <input type="text" placeholder="密码(至少6位)" name="password"    />
+                <a class="button" onclick="inn.reg()">提交</a>
+            </form>
+        </div>
+        <div class="about">
+            <a href="regulation.html#a">游戏规则</a><a href="regulation.html#b">操作说明</a><a href="regulation.html#c" style="border:none;">帮助</a>
+        </div>
+    </section>
+</body>
+<script type="text/javascript">
+ 
+    if(navigator.userAgent.indexOf('UBrowser') > -1 || navigator.userAgent.indexOf('UCBrowser') > -1) {
+            location.href='/uc.html'
+            
+   }else{
+       
+
+    if (!(window.navigator.userAgent.indexOf("Chrome") > -1) && !(window.navigator.userAgent.indexOf("Safari") > -1)) {
+     document.getElementById('installChrome').style.display='block'
+   }
+    }
+
+</script>
+
+</html>
