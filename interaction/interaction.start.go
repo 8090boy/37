@@ -54,7 +54,7 @@ func main() {
 			switch origin {
 			case "http://localhost":
 				stat = true
-			case "http://3737.io":
+			case "http://www.3737.io":
 				stat = true
 			case "http://test.3737.io":
 				stat = true
@@ -90,6 +90,7 @@ func main() {
 	}
 	api.SetApp(router)
 	http.HandleFunc("/myinfo", controller.Myinfo)
+	http.HandleFunc("/interaction", controller.Myrelational)
 	http.HandleFunc("/login", controller.Login)   //login
 	http.HandleFunc("/signin", controller.Signin) //reg
 	http.Handle("/v1/", http.StripPrefix("/v1", api.MakeHandler()))

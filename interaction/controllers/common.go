@@ -6,12 +6,178 @@ import (
 	manage "interaction/models/manage"
 	"math"
 	"my/util"
+	"net/http"
 	"sso/user"
 	"strconv"
 	"strings"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
+
+// 校验用户请求信息
+func validateUserInfo(req *http.Request) (bool, *user.User) {
+
+	cookie, err := req.Cookie("token")
+	if cookie == nil {
+		return false, nil
+	}
+	if err != nil || cookie.Value == "" {
+		return false, nil
+	}
+	conf = util.GetConfig()
+	byTokenUrl := conf.Get("sso", "url") + conf.Get("sso", "byToken")
+	userInfoByte := util.GetUserInfo(byTokenUrl, cookie.Value)
+	if len(userInfoByte) < 1 {
+		return false, nil
+	}
+	//my user info
+	userA := &user.User{}
+	json.Unmarshal(userInfoByte, &userA)
+	if userA == nil {
+		return false, nil
+	}
+	if userA.Id == 0 {
+		return false, nil
+	}
+
+	return true, userA
+}
+
+// 获取自己需要审核的待办
+func findMyTodos(myRelaId int64) map[string]string {
+	aus, ausCount := new(model.Audit).ByRela(myRelaId)
+	sweet := make(map[string]string)
+
+	if ausCount == 0 {
+		return nil
+	}
+	for _, task := range aus {
+		if task == nil {
+			continue
+		}
+		if task.Id == 0 {
+			continue
+		}
+		id := strconv.FormatInt(task.Id, 10)
+		sweet[id] = changeProposerInfo(task)
+	}
+	return sweet
+
+}
+
+// 检查任务是否完成，未完成将设置为冻结状态，完了就设置为正常
+func updateStatusIfTasks(rela *model.Relational, mainM *model.Monad) (*model.Relational, *model.Monad, int, int, int) {
+	firstT, secondT, threeT := findTaskForRelaId(rela.Id)
+	if mainM == nil || rela == nil {
+		return rela, mainM, 0, 0, 0
+	}
+
+	mesA := findAuditsLen(firstT)
+	mesB := findAuditsLen(secondT)
+	mesC := findAuditsLen(threeT)
+
+	limitA, _ := strconv.Atoi(conf.Get("common", "taskLimitA"))
+	limitB, _ := strconv.Atoi(conf.Get("common", "taskLimitB"))
+	limitC, _ := strconv.Atoi(conf.Get("common", "taskLimitC"))
+	//	fmt.Printf("1层：%v;----2层：%v;----3层：%v;\n", mesA, mesB, mesC)
+	//	fmt.Printf("1.limit：%v;----2.limit：%v;----3.limit：%v;\n", limitA, limitB, limitC)
+
+	if mesA >= limitA || mesB >= limitB || mesC >= limitC {
+		rela.Status = RELA_STATUS_FOUR
+		mainM.State = RELA_STATUS_FOUR
+	}
+	if rela.Status == RELA_STATUS_FOUR {
+		if mesA < limitA && mesB < limitB && mesC < limitC {
+			rela.Status = RELA_STATUS_NORMAL
+			mainM.State = RELA_STATUS_NORMAL
+		}
+
+	}
+
+	rela.Edit()
+	mainM.Edit()
+
+	return rela, mainM, mesA, mesB, mesC
+}
+
+func findAuditsLen(aus []*model.Audit) int {
+	result := 0
+
+	for _, au := range aus {
+		if au == nil {
+			continue
+		}
+		if au.Id > 0 {
+			result++
+		}
+	}
+	return result
+}
+
+// 寻找提交者的任务
+func findTaskForRelaId(relaid int64) (firstT, secondT, threeT []*model.Audit) {
+
+	aus, ausCount := new(model.Audit).NotOk(relaid)
+	// 检查任务情况是否需要冻结
+	//	fmt.Println(len(aus))
+	//	fmt.Println(aus)
+	firstT = make([]*model.Audit, ausCount)
+	secondT = make([]*model.Audit, ausCount)
+	threeT = make([]*model.Audit, ausCount)
+	if ausCount == 0 {
+		return firstT, secondT, threeT
+	}
+	for k, m := range aus {
+		if m == nil {
+			continue
+		}
+		if m.Id == 0 {
+			continue
+		}
+		switch m.ProposerCount {
+		case 7:
+			threeT[k] = m
+		case 6:
+			threeT[k] = m
+		case 5:
+			threeT[k] = m
+		case 4:
+			secondT[k] = m
+		case 3:
+			secondT[k] = m
+		case 2:
+			firstT[k] = m
+		case 1:
+			firstT[k] = m
+		case 0:
+			firstT[k] = m
+		}
+	}
+	return firstT, secondT, threeT
+
+}
+
+// 根据未被对方审核的(自己)所有单子和
+//自己所有单子查找级别为0的审核记录
+func findMonadByMyauditsInMyMonadsAndClassIsZero(myAudits []*model.Audit, myMonads []*model.Monad) *model.Audit {
+	if len(myAudits) == 0 || len(myMonads) == 0 {
+		return nil
+	}
+
+	for i := 0; i < len(myAudits); i++ {
+		for j := 0; j < len(myMonads); j++ {
+			myA := myAudits[i]
+			myM := myMonads[j]
+			if myA == nil || myM == nil {
+				continue
+			}
+			if myA.ProposerMonadId == myM.Id && myM.Class == 0 {
+				return myA
+			}
+		}
+	}
+	return nil
+}
 
 // 循环查找上几层单子
 func findParentMonad(monad *model.Monad, layer int) *model.Monad {

@@ -17,14 +17,7 @@ mulriple = 3
 relational.referrer = top
 relaadmin 对应 user(必须存在但不是relational用户)
 main.class = 9
-//
-ip 要对应
-配置nginx代理
-启动时是否初始化数据库
-//
-数据库连接，密码，用户名
-//
-特殊账户密码变更
+
 
 
 

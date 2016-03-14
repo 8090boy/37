@@ -1,10 +1,16 @@
 function cb(obj) {
+  
       if(!obj) location.href = "/api/sso/?redirectUrl=" + location.href
-    if (obj.state>2) {
+    if (obj.state>1) {
         window.obj = obj
         window.user = obj.u
         var index = document.querySelector("#index");
         index.querySelector(".username").innerText = "" + user.Username
+        // 用户参与情况
+        
+        // 如果用户只是参与一种游戏，则直接进入游戏
+        
+        
     } else {
         cookie.Del("token")
         var currentUrl = location.href
@@ -48,7 +54,7 @@ window.onload = start
 
 var inn = {
     join: function () {
-        if (!window.obj.r && !window.obj.s) return alert('非团队用户不能玩啥！')
+      // if (!window.obj.r && !window.obj.s) return alert('非团队用户不能玩啥！')
         location.href = '/37.html'
         
     }

@@ -1,13 +1,13 @@
 function ca(my) {
-    if (!my) location.href = "/api/sso/?redirectUrl=" + location.href
-    
+    if (!my) location.href = "/"
+       debugger
     if (my.state > 4 ) {
     if (my.s==2) return location.href = '6.html'
         window.my37 = my
         document.addEventListener("DOMContentLoaded", main.init.bind(main), false);
     } else {
         cookie.Del("token")
-        location.href = "/api/sso/?redirectUrl=" + location.href
+        location.href = "/"
     }
 }
 var main = {
