@@ -6,16 +6,15 @@ function cb(obj) {
         window.user = obj.u
         var index = document.querySelector("#index");
         index.querySelector(".username").innerText = "" + user.Username
-        // 用户参与情况
-        
-        // 如果用户只是参与一种游戏，则直接进入游戏
-        
-        
     } else {
         cookie.Del("token")
         var currentUrl = location.href
         location.href = "/api/sso/?redirectUrl=" + currentUrl
     }
+    
+    
+    
+    
 }
 
 function start() {
@@ -53,9 +52,20 @@ function start() {
 window.onload = start
 
 var inn = {
-    join: function () {
+    join: function (paltform) {
       // if (!window.obj.r && !window.obj.s) return alert('非团队用户不能玩啥！')
-        location.href = '/37.html'
+      switch (paltform) {
+          case 37:
+                  location.href = '/37.html'
+              break;
+              case 24:
+              alert('Construction, please wait!')
+             
+             //     location.href = '/24.html'
+              break;
+       
+      }
+    
         
     }
     , reg: function () {

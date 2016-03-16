@@ -7,10 +7,10 @@ rm -f ./sso.start
 #
 ssopid=`pgrep sso.start`
 kill -9 ${ssopid}
-sleep 2
-inpid=`pgrep interaction.start`
-kill -9 ${inpid}
-sleep 2
+sleep 1
+interactionpid=`pgrep interaction.start`
+kill -9 ${interactionpid}
+sleep 1
 #
 #
 export GOPATH=/usr/local/gopath

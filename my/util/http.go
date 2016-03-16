@@ -10,6 +10,7 @@ import (
 )
 
 func WriteJSON(w http.ResponseWriter, arg interface{}) {
+
 	var byteArr []byte = []byte{}
 	if arg == nil {
 		w.Write(byteArr)

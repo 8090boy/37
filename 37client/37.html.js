@@ -1,26 +1,35 @@
-function ca(my) {
-    if (!my) location.href = "/"
-       debugger
-    if (my.state > 4 ) {
-    if (my.s==2) return location.href = '6.html'
-        window.my37 = my
-        document.addEventListener("DOMContentLoaded", main.init.bind(main), false);
+function ca(info) {
+    if (!info){
+        cookie.Del("token")
+        location.href = "/"
+        return
+    }
+    if (info.state>1) {
+        window.my37 = info
+        document.addEventListener("DOMContentLoaded", main.goon, false);
     } else {
         cookie.Del("token")
         location.href = "/"
     }
 }
 var main = {
-    reload: function () {
-        location.reload()
-    }
-    , fullScreen: function () {
+   fullScreen: function () {
         launchFullscreen(document.documentElement) // 整个网页 // 启动全屏
     }
     , normalScreen: function () {
         exitFullScreen()
     }
-    , init: function () {
+ , goon : function(){
+        var ref = Math.random() * 10000
+        var url = '/api/37/interaction?cb=main.my37&v=' + ref.toFixed(0)
+        jQuery.get(url,null)
+ }
+    , my37 : function (obj) {
+      
+        if (obj.s==2) return location.href = '6.html'
+        for (var a in obj) {
+            my37[a] = obj[a]
+        }
         for (var a in my37) {
             this[a] = my37[a]
         }

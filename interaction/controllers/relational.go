@@ -19,14 +19,13 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	lockValidate.Lock()
 	defer lockValidate.Unlock()
 	conf = util.GetConfig()
-	callback := "my37"
+	callback := req.FormValue("cb")
 	var sweet map[string]interface{} = make(map[string]interface{})
 	sweet["state"] = 0
 	//my user info
 	stat, userA := validateUserInfo(req)
 
-	if stat == false {
-		sweet["state"] = 2
+	if !stat {
 		all_info, _ := json.Marshal(sweet)
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
@@ -52,7 +51,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 				}
 			}
 		}
-		sweet["state"] = 5
+		sweet["state"] = 1
 		all_info, _ := json.Marshal(sweet)
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
@@ -63,7 +62,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	}
 	// 是否出局
 	if relational.Status == RELA_STATUS_DISCARD || relational.Status == RELA_STATUS_Retired {
-		sweet["state"] = 6
+		sweet["state"] = 2
 		all_info, _ := json.Marshal(sweet)
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
