@@ -30,7 +30,8 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
 	}
-
+	//
+	sweet["state"] = 1
 	//my relational
 	relational := new(model.Relational)
 	relational = relational.BySsoId(userA.Id)
@@ -51,7 +52,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 				}
 			}
 		}
-		sweet["state"] = 1
+
 		all_info, _ := json.Marshal(sweet)
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
@@ -85,6 +86,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// 有收益的普通会员
 	if relational.Income > 0 && relational.Referrer != "top" {
 
 		// 检查自己状态

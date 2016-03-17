@@ -57,6 +57,58 @@ func SubmitTask(rep rest.ResponseWriter, req *rest.Request) {
 	rep.WriteJson("ok")
 }
 
+var lockNewSubMonadInAuto sync.Mutex
+
+// 自动出单
+func newSubMonadInAuto(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
+	lockNewSubMonadInAuto.Lock()
+	defer lockNewSubMonadInAuto.Unlock()
+	//
+	// Add monad start
+	//
+	myMonad := model.NewMonad()
+	myMonad.Pertain = myRelational.Id
+	myMonad.IsMain = 0
+	myMonad.MainMonad = myRelational.CurrentMonad
+	//
+	parentRela := new(model.Relational)
+	parMonad := new(model.Monad)
+	flag := false
+
+	parentRela, parMonad, flag = newSub(myMonad, myRelational, myMainMonad)
+	// 没有位置
+	if !flag {
+		return false
+	}
+
+	// 因为对方上级单子处于冻结状态
+	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
+	if parentRela.Referrer == "top" {
+		// add audit
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+		return true
+	}
+
+	state := false
+	state = state || parMonad.State == RELA_STATUS_FREEZE
+	state = state || parMonad.State == RELA_STATUS_FOUR
+	state = state || parentRela.Status == RELA_STATUS_FREEZE
+	state = state || parentRela.Status == RELA_STATUS_FOUR
+	if parentRela.SsoId > 1 {
+		state = state || parMainMonad.Class > 6
+	}
+
+	if state {
+		parentRela.Loss = parentRela.Loss + INCOME[0]
+		parentRela.Edit()
+		// 指定帐号
+		specialUserId := int64(3)
+		// add audit
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 0)
+		return true
+	}
+}
+
 // 出单
 func NewTask(res rest.ResponseWriter, req *rest.Request) {
 
