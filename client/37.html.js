@@ -244,6 +244,7 @@ var main = {
         //  ul.style.height = h + 'px'
         df.appendChild(ul)
         body.appendChild(df)
+        
     }
     , _: function (dataArr, key, val) {
         for (var i = 0; i < dataArr.length; i++) {
@@ -405,7 +406,7 @@ var main = {
             areaBottom.appendChild(newP)
             var url = '/api/37/v1/task/submit/' + id
             ajax.GET(url, this.addResult.bind(this));
-
+main.goon()
         }
         , addResult: function (msg) {
             if (msg) {
@@ -419,11 +420,11 @@ var main = {
     }
     , Audit: {
         Ok: function (id) {
-               if (!window.confirm('确定收到红包了吗？'))    return
-              
+            if (!window.confirm('确定收到红包了吗？'))    return
             var url = '/api/37/v1/todo/submit/' + id
             this.id = "au_li_" + id
             ajax.GET(url, this._auditOk.bind(this));
+            main.goon()
         }
         , _auditOk: function (msg) {
             if (msg.influence) {
