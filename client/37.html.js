@@ -1,4 +1,5 @@
 function ca(info) {
+    
     if (!info){
         cookie.Del("token")
         location.href = "/"
@@ -70,12 +71,13 @@ var main = {
     }
  
     , MonadNormal: function () {
+        
         this.defaultCountUp(this.r.Income, this.r.Spending, this.r.Loss)
         this._showStartTag()
         document.querySelector('#todo').innerText = this.todos ? this.todos.length : 0
-        this.showCreateMonadInfo() // show monad
+    //    this.showCreateMonadInfo() // show monad
         this.Audit.UpdateTask() // show task
-     
+     return
         //
            var obj = {}
             obj.abcd = abcd
@@ -97,6 +99,7 @@ var main = {
 
 //显示出单信息
     , showCreateMonadInfo: function () {
+        return
         var generate = document.querySelector('#generate')
 
         var uTip = generate.querySelector('u')
@@ -143,26 +146,18 @@ var main = {
         this.reloadPage()
     }
     , AddMonad: function () {
-        if (cookie.Get(my37.r.Mobile + "today")) {
-            alert("出单间隔时间太短，请稍候再试！")
-            return
-        }
-        if (window.confirm('确定要出单吗？')) {
+       
             var url = '/api/37/v1/task/new'
             ajax.GET(url, this._addMonadPost.bind(this))
-        }
+       
     }
-    , _addMonadPost: function (msg) {
-        if (msg.fail) return alert("暂无位置出单，6小时后再试！")
+    , _addMonadPost: function (msg) { 
         //s20//h小时//d天
         if (msg.ok) {
             cookie.Set(my37.r.Mobile + "today", true, this.interval)
             return alert("成功!")
         }
-        this._copyTo37(msg)
-        var generate = document.querySelector('#generate')
-        removeListener(generate, "click", this.AddMonad)
-        addListener(generate, "click", this.showDFinfo.bind(this))
+        this._copyTo37(msg) 
         this.showDFinfo()
 
     }

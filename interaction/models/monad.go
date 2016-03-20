@@ -54,6 +54,7 @@ func NewMonad() *Monad {
 	cate.Create = time.Now()
 	cate.Class = 0
 	cate.State = 0
+	cate.IsMain = 0
 	return cate
 }
 

@@ -5,7 +5,7 @@ function cb(obj) {
         window.obj = obj
         window.user = obj.u
         var index = document.querySelector("#index");
-        index.querySelector(".username").innerText = "" + user.Username
+        index.querySelector(".username").innerText = "" + user.Mobile
     } else {
         cookie.Del("token")
         var currentUrl = location.href

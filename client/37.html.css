@@ -176,23 +176,7 @@ cursor: pointer;
 {
 color: #333333;
 }
-#abcd span
-{
-    padding: 0px;
-    margin: 0px;
-    color: green;
-    font-weight: bold;
-    display: inline;
-}
-#abcd
-{
-    color: #999;
-    bottom: 0em;
-    position: absolute;
-    left: 50%;
-    margin-left: -70px;
-    font-size: 0.8em;
-}
+ 
 .platform .top 
 {
 color: #333333;
@@ -499,7 +483,6 @@ height: 8em;
 position: relative;
 }
 .platform .top div, 
-.platform .task .reload,
 .platform .task div {
 vertical-align: top;
 position: relative;
@@ -538,11 +521,9 @@ float: left;
     height: 100%;
     overflow: hidden;
 }
-.platform .task.f1 .todo,
-.platform .task.f1 .generate
+.platform .task.f1 .todo
 {
-width: 50%;
-float: left;
+width: 50%; 
 }
 
 
@@ -555,37 +536,7 @@ border-right: 1px solid #DDDCE0;
 width: 100%;
 overflow: hidden;   
 
-}
-.platform .task .reload{
-position: absolute;
-width: 3em;
-height: 3em;
-left: 50%;
-top: 50%;
-border: 1px #ddd solid;
-margin-top: -1.5em;
-margin-left: -1.5em;
-border-radius: 4em;
-display: inline-block;
-/* background-color: #FFF; */
-z-index: 2;
-background: #FFFFFF url('img/icon.svg') no-repeat;
-background-position: 50% -429px;
-}
-
-.platform .task i 
-{
-display: inline-block;
-position: absolute;
-height: 100%;
-width: 1px;
-z-index: 1;
-left: 50%;
-
-border-left: 1px solid #ddd;
-
-
-}
+}  
 
 .button{
 text-decoration: none;
@@ -1008,8 +959,8 @@ padding: 1em 0em;
 }
 
  
-.platform .top div span, 
-.platform .task div span {
+.platform .top div span
+{
 margin-top: 4em;    
 }
 
@@ -1042,7 +993,7 @@ height: 35em;
 @media screen and (min-height: 500px){
     
 .platform .task {
-    height: 8em;  
+    height: 6em;  
 }
     
 }

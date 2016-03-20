@@ -135,9 +135,10 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		spendersRela.Status = 1
 	}
 	// 第一次收款需要更新自己出单时间，防止任务收款后就冻结了
-	if audit.Isnewmonad == 1 {
-		spendersRela.PrevNewMonad = time.Now().Local()
-	}
+	// -- 因为自动出单，不需要这里更新出单时间
+	//	if audit.Isnewmonad == 1 {
+	//		spendersRela.PrevNewMonad = time.Now().Local()
+	//	}
 	spendersRela.Spending = spendersRela.Spending + income
 	switch income {
 	case 20:

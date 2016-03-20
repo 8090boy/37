@@ -27,10 +27,8 @@ func initDbEngine(conf *util.Config) {
 	DBtype := conf.Get("database", "dbtype")
 	password := conf.Get("database", "password")
 	dbUrl := strings.Join([]string{strings.Join([]string{name, password}, ":"), url}, "@")
-
 	db, _ = xorm.NewEngine(DBtype, dbUrl)
-
-	db.ShowSQL = true
+	db.ShowSQL(true)
 }
 
 type State struct {

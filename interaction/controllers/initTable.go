@@ -29,6 +29,7 @@ func initTJZ(mobile, referrerId string, parentMonadId int64) {
 	relational.Referrer = referrerId
 	relational.Create = time.Now()
 	relational.Prev = relational.Create
+	relational.PrevNewMonad = relational.Create
 	relational.Status = 1
 	//
 	myUser := findUserByMob(mobile)

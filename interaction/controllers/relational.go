@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
+	"sso/user"
 	"sync"
 
 	model "interaction/models"
@@ -23,7 +25,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	var sweet map[string]interface{} = make(map[string]interface{})
 	sweet["state"] = 0
 	//my user info
-	stat, userA := validateUserInfo(req)
+	stat, myInfo := validateUserInfo(req)
 
 	if !stat {
 		all_info, _ := json.Marshal(sweet)
@@ -34,16 +36,16 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	sweet["state"] = 1
 	//my relational
 	relational := new(model.Relational)
-	relational = relational.BySsoId(userA.Id)
+	relational = relational.BySsoId(myInfo.Id)
 
 	if relational == nil {
 		// is  Specificity account
-		spcif := new(manage.Relaadmin).FindBySsoId(userA.Id)
+		spcif := new(manage.Relaadmin).FindBySsoId(myInfo.Id)
 		if spcif != nil {
-			if spcif.Ssoid > 0 && userA.Id == spcif.Ssoid {
+			if spcif.Ssoid > 0 && myInfo.Id == spcif.Ssoid {
 				sweet["s"] = 2
 				sweet["income"] = spcif.Income
-				audits, _ := new(model.Audit).BySso(userA.Id, 0, 1)
+				audits, _ := new(model.Audit).BySso(myInfo.Id, 0, 1)
 				if len(audits) > 0 {
 					aus, count := new(model.Audit).BySso(spcif.Ssoid, 0, 1)
 					if count > 0 {
@@ -88,18 +90,17 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 
 	// 有收益的普通会员
 	if relational.Income > 0 && relational.Referrer != "top" {
-
 		// 检查自己状态
 		time.LoadLocation(util.LoadLocation)
 		sysNow := time.Now().Local()
-		unfreezeDatetime := conf.Get("common", "unfreezeDatetime")
+		//		unfreezeDatetime := conf.Get("common", "unfreezeDatetime")
 		retirementDatetime := conf.Get("common", "retirementDatetime")
 		//;h hour
 		//;m minutes
 		//;s second
-		refHours, _ := time.ParseDuration(unfreezeDatetime)           // 未出单// s秒,m分,h小时,月
+		//	refHours, _ := time.ParseDuration(unfreezeDatetime)           // 未出单// s秒,m分,h小时,月
 		refUnFreezeHours, _ := time.ParseDuration(retirementDatetime) // 需要做完任务
-		unFreezeTime := relational.PrevNewMonad.Add(refHours)         // 解冻期
+		//	unFreezeTime := relational.PrevNewMonad.Add(refHours)         // 解冻期
 		// 解冻时间期限
 		retirementDate := myMainmonad.UnFreeze.Add(refUnFreezeHours) // 非正常出局期
 		// 更新玩啥37系统的时间
@@ -116,31 +117,38 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 			}
 		}
 
-		// 正常状态时，可能长时间未出单需要冻结
-		if relational.Status == RELA_STATUS_NORMAL {
-			if sysNow.After(unFreezeTime) {
-				unfreezeMonadCount := conf.Get("common", "unfreezeMonadCount")
-				unfmc, _ := strconv.Atoi(unfreezeMonadCount)
-				relational.Status = RELA_STATUS_FREEZE
-				myMainmonad.State = RELA_STATUS_FREEZE
-				myMainmonad.UnfreezePeriodCount = unfmc
-				myMainmonad.UnFreeze = sysNow.Add(refUnFreezeHours)
-				myMainmonad.Freeze = sysNow
-				relational.Edit()
-				myMainmonad.Edit()
-			}
-		}
-
 		// 正常状态时未完成任务，可能被冻结
 		if relational.Status == RELA_STATUS_NORMAL || relational.Status == RELA_STATUS_FOUR {
 			updateStatusIfTasks(relational, myMainmonad)
 		}
 
+		// 正常状态时，可能长时间未出单需要冻结
+		//		if relational.Status == RELA_STATUS_NORMAL {
+		//			if sysNow.After(unFreezeTime) {
+		//				unfreezeMonadCount := conf.Get("common", "unfreezeMonadCount")
+		//				unfmc, _ := strconv.Atoi(unfreezeMonadCount)
+		//				relational.Status = RELA_STATUS_FREEZE
+		//				myMainmonad.State = RELA_STATUS_FREEZE
+		//				myMainmonad.UnfreezePeriodCount = unfmc
+		//				myMainmonad.UnFreeze = sysNow.Add(refUnFreezeHours)
+		//				myMainmonad.Freeze = sysNow
+		//				relational.Edit()
+		//				myMainmonad.Edit()
+		//			}
+		//		}
+
 	}
+	// 有收入的股东和普通会员都要定是产生单字
+	if relational.Income > 0 {
+		// 正常状态时需要自动出单
+		if relational.Status == RELA_STATUS_NORMAL {
+			_autoNewMonad(myInfo, relational, myMainmonad)
+		}
+	}
+
 	if myMainmonad.Id > 0 {
 		sweet["m"] = *myMainmonad
 	}
-
 	//my audits
 	var audit model.Audit
 	//
@@ -179,14 +187,73 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	if count > 0 {
 		sweet["tasks"] = myTask
 	}
-
 	aus, _ := new(model.Audit).ByRela(relational.Id)
 	if len(aus) > 0 {
 		sweet["todos"] = aus
 	}
 	sweet["interval"] = conf.Get("common", "interval")
-
 	sweet["state"] = 100
 	all_info, _ := json.Marshal(sweet)
 	util.WriteJSONP(res, callback+"("+string(all_info)+")")
+}
+
+// 自动出单
+// 是否应该出单
+// 出单了就返回 true,没有出单返回 false
+func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
+	conf = util.GetConfig()
+	// 收入大于支出时，需要出单
+	incomeIsOk := myRelational.Income > myRelational.Spending
+	// 上次出单时间多久？，需要出单
+	interval, _ := time.ParseDuration(conf.Get("common", "interval"))
+	newPointer := myRelational.PrevNewMonad.Add(interval)
+	now := time.Now().Local()
+	prevNewMonadDateIsOk := now.After(newPointer)
+	// 是否应该出单
+	if !incomeIsOk && !prevNewMonadDateIsOk {
+		fmt.Println("create monad false. 1")
+		return false
+	}
+	// 出单
+	myMonad := model.NewMonad()
+	myMonad.Pertain = myRelational.Id
+	myMonad.MainMonad = myRelational.CurrentMonad
+	//
+	parentRela, parMonad, flag := newSub(myMonad, myRelational, myMainMonad)
+	// 没有位置
+	if !flag {
+		fmt.Println("create monad false. 2")
+		return false
+	}
+	// 更新自己出单时间
+	myRelational.PrevNewMonad = newPointer
+	myRelational.Edit()
+	// 因为对方上级单子处于冻结状态
+	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
+	if parentRela.Referrer == "top" {
+		// add audit
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+		fmt.Println("create monad true. 3")
+		return true
+	}
+	state := false
+	state = state || parMonad.State == RELA_STATUS_FREEZE
+	state = state || parMonad.State == RELA_STATUS_FOUR
+	state = state || parentRela.Status == RELA_STATUS_FREEZE
+	state = state || parentRela.Status == RELA_STATUS_FOUR
+	if parentRela.SsoId > 1 {
+		state = state || parMainMonad.Class > 6
+	}
+	if state {
+		parentRela.Loss = parentRela.Loss + INCOME[0]
+		parentRela.Edit()
+		// 指定帐号
+		specialUserId := int64(3)
+		// add audit
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 0)
+	} else {
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+	}
+	fmt.Println("create monad true. 4")
+	return true
 }
