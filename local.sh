@@ -7,10 +7,13 @@ rm -f ./sso.start
 #
 ssopid=`pgrep sso.start`
 kill -9 ${ssopid}
-sleep 2
+sleep 5
 inpid=`pgrep interaction.start`
 kill -9 ${inpid}
-sleep 2
+sleep 5
+echo "status--------------------"
+ps aux | grep .start
+echo "status--------------------"
 #
 #
 export GOPATH=/usr/local/gopath
