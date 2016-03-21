@@ -43,18 +43,12 @@ var main = {
     }
     , uTagStas: function () {
         var uus = document.querySelectorAll("u")
-        for (var i = 0; i < uus.length; i++) {
-            if (i == 1) {
-                if (cookie.Get(my37.r.Mobile + "today")) {
-                    uus[i].style.display = 'none'
-                }
-                continue
-            }
-            var u = uus[i].innerHTML
-            if (!u || u == 0) {
-                uus[i].style.display = 'none'
+        for (var i = 0; i < uus.length; i++) {            
+            var u = uus[i]
+            if (!u.innerText || u.innerText == 0) {
+                u.style.display = 'none'
             } else {
-                uus[i].style.display = 'inline-block'
+                u.style.display = 'inline-block'
             }
         }
     }
