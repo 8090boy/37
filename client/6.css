@@ -48,18 +48,24 @@ width: 100%;
 #info a{	
     height: 100%;
     width: 5em;
-    
+    cursor: pointer;
     overflow: hidden;
-display: inline-block;
-    background-color: #4E4E4E;
+display: inline-block; 
+        background-image: url('img/icon.svg');
+    background-position: center -660px;
 }
+#info a:hover{
+    background-color: #505050;
+}
+
 #info div{
 vertical-align: top;
 margin-top: 1.3em;
 display: inline-block;
 color: white;
 height: 100%;
-text-indent: 1em;
+text-indent: 0.8em;
+ 
 }
 #info div h4{
 display: block;
@@ -69,6 +75,8 @@ margin: 0.5em 0px;
 #info div span{
 display: block; 
 font-size: 0.9em;
+background-image: url('img/icon.svg');
+    background-position: 130px -614px;
 }
 
 #info div span:before{
@@ -76,34 +84,14 @@ font-size: 0.9em;
     display: inline-block;
 }
 
-#info .recommand{
-position: absolute;
-top: 0.8em;
-right: 0.5em;
-width: 2em;
-height: 2em;
-display: inline-block;
-color: white;
-background: url(img/share.svg) 0px 0px no-repeat;
-}
-
+ 
 
 
 .platform {
 text-align: center;
 position: relative;
 }
-.platform h1 {
-display: block;
-height: 25px;
-margin: 0px;
-padding: 0px;
-margin-top: 6em;
-background-image: url(img/start.svg);
-background-origin: padding-box;
-background-repeat: no-repeat;
-background-position: center 0px;
-}
+ 
 
 .platform h2 {
 font-size: 2.4em;

@@ -12,10 +12,15 @@ function ca(my) {
 var main = {
      goon : function(){
         var ref = Math.random() * 10000
-        var url = '/api/37/interaction?cb=main.my37&v=' + ref.toFixed(0)
+        var url = '/api/37/interaction?cb=main.init&v=' + ref.toFixed(0)
         jQuery.get(url,null)
     },
-    init: function () {
+    init: function (obj) {
+        
+        for (var b in obj) {
+            my37[b] = obj[b]
+        }
+        
         for (var a in my37) {
             this[a] = my37[a]
         }
@@ -43,7 +48,7 @@ var main = {
     , showUi: function () {
         document.querySelector("#info .username").innerHTML = my37.u.Alias + "&nbsp;&nbsp;&nbsp;" + my37.u.Mobile
         document.querySelector("#info .wechat").innerText = my37.u.Wechat
-        document.querySelector("#income").innerText = this.income
+        document.querySelector("#income").innerText = my37.income
     }
     ,showTodo:function(){
          var htm = [];
