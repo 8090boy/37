@@ -1,11 +1,11 @@
 function ca(info) {
-    
-    if (!info){
+
+    if (!info) {
         cookie.Del("token")
         location.href = "/"
         return
     }
-    if (info.state>1) {
+    if (info.state > 1) {
         window.my37 = info
         document.addEventListener("DOMContentLoaded", main.goon, false);
     } else {
@@ -14,20 +14,20 @@ function ca(info) {
     }
 }
 var main = {
-   fullScreen: function () {
+    fullScreen: function () {
         launchFullscreen(document.documentElement) // 整个网页 // 启动全屏
     }
     , normalScreen: function () {
         exitFullScreen()
     }
- , goon : function(){
+    , goon: function () {
         var ref = Math.random() * 10000
         var url = '/api/37/interaction?cb=main.my37&v=' + ref.toFixed(0)
-        jQuery.get(url,null)
- }
-    , my37 : function (obj) {
-      
-        if (obj.s==2) return location.href = '6.html'
+        jQuery.get(url, null)
+    }
+    , my37: function (obj) {
+
+        if (obj.s == 2) return location.href = '6.html'
         for (var a in obj) {
             my37[a] = obj[a]
         }
@@ -43,7 +43,7 @@ var main = {
     }
     , uTagStas: function () {
         var uus = document.querySelectorAll("u")
-        for (var i = 0; i < uus.length; i++) {            
+        for (var i = 0; i < uus.length; i++) {
             var u = uus[i]
             if (!u.innerText || u.innerText == 0) {
                 u.style.display = 'none'
@@ -55,7 +55,7 @@ var main = {
     , showUi: function () {
         document.querySelector("#info .username").innerText = my37.u.Alias || my37.u.Mobile
         document.querySelector("#info .wechat").innerText = my37.u.Wechat
-       
+
         if (!this.r) return this.noHaveRela()
         if (!this.r.CurrentMonad) return this.noState()
         if (!this.m) return this.noState()
@@ -63,19 +63,19 @@ var main = {
         //有主单且正常
         this.MonadNormal()
     }
- 
+
     , MonadNormal: function () {
-        
+
         this.defaultCountUp(this.r.Income, this.r.Spending, this.r.Loss)
         this._showStartTag()
         document.querySelector('#todo').innerText = this.todos ? this.todos.length : 0
-    //    this.showCreateMonadInfo() // show monad
+        //    this.showCreateMonadInfo() // show monad
         this.Audit.UpdateTask() // show task
-     return
+        return
         //
-           var obj = {}
-            obj.abcd = abcd
-        if (my37.pnm && this.r.Income >0) {
+        var obj = {}
+        obj.abcd = abcd
+        if (my37.pnm && this.r.Income > 0) {
             var tmp = my37.pnm.replace('T', ' ')
             tmp = tmp.split('+')[0]
             obj.time_day = document.getElementById("times_day")
@@ -85,8 +85,8 @@ var main = {
             var reftime = new Date(Date.parse(tmp.replace(/-/g, "/"))) // 设定活动结束结束时间     
             obj.time_end = reftime.getTime()
             count_down(obj)
-        }else{
-            obj.abcd.style.display='none'
+        } else {
+            obj.abcd.style.display = 'none'
         }
 
     }
@@ -140,10 +140,10 @@ var main = {
         this.reloadPage()
     }
     , AddMonad: function () {
-       
-            var url = '/api/37/v1/task/new'
-            ajax.GET(url, this._addMonadPost.bind(this))
-       
+
+        var url = '/api/37/v1/task/new'
+        ajax.GET(url, this._addMonadPost.bind(this))
+
     }
     , _addMonadPost: function (msg) { 
         //s20//h小时//d天
@@ -151,7 +151,7 @@ var main = {
             cookie.Set(my37.r.Mobile + "today", true, this.interval)
             return alert("成功!")
         }
-        this._copyTo37(msg) 
+        this._copyTo37(msg)
         this.showDFinfo()
 
     }
@@ -238,7 +238,7 @@ var main = {
         //  ul.style.height = h + 'px'
         df.appendChild(ul)
         body.appendChild(df)
-        
+
     }
     , _: function (dataArr, key, val) {
         for (var i = 0; i < dataArr.length; i++) {
@@ -270,18 +270,18 @@ var main = {
         } else {
             input.innerText = location.protocol + "//" + location.hostname + "/?r=" + msg
         }
-        
+
         dialog.style.display = 'block'
         shrea.style.display = 'block'
         shrea.style.width = document.body.clientWidth + 'px'
-       
+
     }
     , shrea_hide: function () {
-         var dialog = document.querySelector('#dialog')
+        var dialog = document.querySelector('#dialog')
         var shrea = dialog.querySelector('.shrea')
         dialog.style.display = 'none'
         shrea.style.display = 'none'
-        
+
     }
 
     , Task: {
@@ -400,7 +400,7 @@ var main = {
             areaBottom.appendChild(newP)
             var url = '/api/37/v1/task/submit/' + id
             ajax.GET(url, this.addResult.bind(this));
-main.goon()
+            main.goon()
         }
         , addResult: function (msg) {
             if (msg) {
@@ -414,7 +414,7 @@ main.goon()
     }
     , Audit: {
         Ok: function (id) {
-            if (!window.confirm('确定收到红包了吗？'))    return
+            if (!window.confirm('确定收到红包了吗？')) return
             var url = '/api/37/v1/todo/submit/' + id
             this.id = "au_li_" + id
             ajax.GET(url, this._auditOk.bind(this));

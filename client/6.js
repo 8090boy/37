@@ -1,7 +1,7 @@
 function ca(my) {
     if (my.state) {
         window.my37 = my
-        document.addEventListener("DOMContentLoaded", main.init.bind(main), false);
+        document.addEventListener("DOMContentLoaded", main.goon, false);
     } else {
           cookie.Del("token")
         currentUrl = location.href
@@ -10,6 +10,11 @@ function ca(my) {
 }
 
 var main = {
+     goon : function(){
+        var ref = Math.random() * 10000
+        var url = '/api/37/interaction?cb=main.my37&v=' + ref.toFixed(0)
+        jQuery.get(url,null)
+    },
     init: function () {
         for (var a in my37) {
             this[a] = my37[a]
