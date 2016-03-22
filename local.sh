@@ -27,7 +27,7 @@ nohup ./sso.start > /dev/null 2>&1 &
 nohup ./interaction.start > /dev/null 2>&1 &
 
 ps aux | grep .start
-#/usr/local/nginx/sbin/nginx
+/usr/local/nginx/sbin/nginx
 /usr/local/nginx/sbin/nginx -s reload
 ps aux | grep nginx
 echo "=======sso and interaction start ok!======"

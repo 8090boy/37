@@ -37,9 +37,13 @@
             <div class="taskList"></div>
             <div class="newRedpackage"></div>
             <article>
+                
                 <h1   ></h1>
                 <h2 ondblclick="main.fullScreen()"  id="income" ref=0>0</h2>
                 <h3   ><i id="spending" ref=0  >0</i><b id="loss"  ref=0 >0</b></h3>
+                 <div class="todo" onclick="main.todo()">
+                        <u id="todo">0</u>
+                    </div>
             </article>
             <div class="process" style="display:none">出单进行中...
                 <br/> 请向对方发放20元红包，等对方确认！
@@ -49,13 +53,6 @@
                 <br>你可以电话催促他！</div>
             <span class="jiang"></span>
             <div class="taskWarp">
-                <div class="task f1">
-                    <div class="todo" onclick="main.todo()">
-                        <span>收益</span>
-                        <u id="todo">0</u>
-                    </div>
-                   
-                </div>
                 <div class="task f2">
                     <div class="one" onclick="main.Task.Ok(1)">
                         <span>任务一</span>

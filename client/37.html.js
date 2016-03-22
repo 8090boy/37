@@ -68,7 +68,13 @@ var main = {
 
         this.defaultCountUp(this.r.Income, this.r.Spending, this.r.Loss)
         this._showStartTag()
-        document.querySelector('#todo').innerText = this.todos ? this.todos.length : 0
+        if(this.todos ){
+            if(this.todos.length ){
+                 document.querySelector('#todo').innerText = this.todos.length
+                 document.querySelector('.todo').className = 'todo addRedpackage'
+            }
+        }
+        
         //    this.showCreateMonadInfo() // show monad
         this.Audit.UpdateTask() // show task
         return
@@ -475,7 +481,7 @@ var main = {
         , UpdateTask: function () {
             var tasks = my37.tasks
             if (!tasks || !tasks.length) return
-            var taskUi = document.querySelectorAll(".task")[1]
+            var taskUi = document.querySelector(".task")
 
             var oneN = 0, twoN = 0, threeN = 0;
             for (var i = 0; i < tasks.length; i++) {

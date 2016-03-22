@@ -109,7 +109,36 @@ position: relative;
     background-color: white;
     overflow: hidden;
     padding: 0.5em 0px;
+    
+position: relative;
 }
+.platform .todo {
+    display: none;
+    position: absolute;
+    border-radius: 5px;
+    font-size: 2em;
+    width: 2.5em;
+    height: 2em;
+    line-height: 2em;
+    top: 30%;
+    left: 75%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.platform .todo.addRedpackage {
+    display: block;
+    background-image: url(img/icon.svg);
+    background-position: 40% 946px;
+  
+}
+
+.platform .todo span,
+.platform .todo u
+{
+    color: red;
+}
+
 .platform h1 {
 display: block;
 height: 25px;
@@ -217,9 +246,9 @@ background-color: white;
 display: block;
 height: 0.5em;
 line-height: 0.5em;
-border-top: 1px solid #DDDCE0;
-border-bottom: 1px solid #DDDCE0;
-background-color: #eeeeee;
+border-top: 1px solid #eee;
+border-bottom: 1px solid #eee;
+background-color: whitesmoke;
 
 }
 
@@ -477,8 +506,7 @@ font-weight: bold !important;
 }
 
 .platform .task {
-border-bottom: 1px solid #DDDCE0;
-cursor: pointer;
+border-bottom: 1px solid #eee;
 height: 8em;
 position: relative;
 }
@@ -523,13 +551,13 @@ float: left;
 }
 .platform .task.f1 .todo
 {
-width: 50%; 
+width: 33%; 
 }
 
 
 .platform .task .two{
-border-left: 1px solid #DDDCE0;
-border-right: 1px solid #DDDCE0;
+border-left: 1px solid #EEE;
+border-right: 1px solid #EEE;
 }
 .platform .task.f1 
 {
