@@ -113,6 +113,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		myRelaAdmin := new(manage.Relaadmin).FindBySsoId(userA.Id)
 		myRelaAdmin.Income = myRelaAdmin.Income + income
 		myRelaAdmin.UpdateWhereColName(myRelaAdmin.Relaid, myRelaAdmin.Ssoid)
+
 	} else {
 		// 自己收入金额增加
 		myRela = myRela.ById(audit.RelationalId)
