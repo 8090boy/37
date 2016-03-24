@@ -225,7 +225,7 @@ func newSub(myMonad *model.Monad, myRela *model.Relational, myMainMonad *model.M
 			return nil, nil, false
 		}
 
-		parMonad = findChildsByMonad(topMonad) // 在自己归属的主线下面找空位
+		// parMonad = findChildsByMonad(topMonad) // 在自己归属的主线下面找空位
 	} else { // 在自己下面找空位
 		parMonad = findChildsByMonad(myMainMonad) // 在自己主单下面找空位
 	}
