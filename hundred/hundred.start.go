@@ -29,7 +29,7 @@ func init() {
 		confFileName = "conf_dev.ini"
 	}
 	//	confPath := wd + util.GetSysSplit() + confFileName
-	confPath := wd + util.GetSysSplit() + "interaction" + util.GetSysSplit() + confFileName
+	confPath := wd + util.GetSysSplit() + "hundred" + util.GetSysSplit() + confFileName
 	fmt.Println(confPath)
 	conf = util.SetConfig(confPath)
 
@@ -95,7 +95,7 @@ func main() {
 	http.HandleFunc("/signin", controller.Signin) //reg
 	http.Handle("/v1/", http.StripPrefix("/v1", api.MakeHandler()))
 	hostAndPort := conf.Get("sysinfo", "port")
-	fmt.Printf("Interaction start OK. = %v\n", hostAndPort)
+	fmt.Printf("Hundred start OK. = %v\n", hostAndPort)
 	http.ListenAndServe(hostAndPort, nil)
 
 }

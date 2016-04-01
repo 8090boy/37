@@ -25,7 +25,7 @@ position: fixed;
 top: 0px;    
 text-align: left;
 -webkit-user-select: none;
-background-color: #921400;
+background-color: #FF8405;
 height: 6em;
 width: 100%;
 z-index: 10;
@@ -76,7 +76,6 @@ color: white;
 }
 #info div h4{
 display: block;
-margin: 0.5em 0px;
 
 }
 #info div span{
@@ -154,7 +153,7 @@ background-position: 50% 0px;
 font-size: 3.6em;
 padding: 0px;
 margin: 0px;
-color: #921400;
+color: #ff8405;
 font-family: inherit;
 -webkit-font-smoothing: antialiased;
 }
@@ -649,7 +648,6 @@ margin-bottom: 2em;
 /***********my************/
 
 #my {
- display: none;
 text-align: center; 
 margin-top: 7em;
 }
@@ -927,6 +925,7 @@ cursor: pointer;
 height: 42px; 
 line-height: 42px;
 text-align: center;
+background-color: #F7DF6B;
 margin: 0px auto;
 position: absolute;
 }
@@ -943,7 +942,7 @@ color: #6D4700;
 text-indent: 5px;
 font-size: 16px;
 -webkit-overflow-scrolling:touch;
-background-color: #FFDB8C; 
+background-color: yellow; 
 }
 
 #dialog .shrea .input:before

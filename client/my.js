@@ -22,7 +22,7 @@ var main = {
     }
     , goon: function () {
         var ref = Math.random() * 10000
-        var url = '/api/200/interaction?cb=main.my37&v=' + ref.toFixed(0)
+        var url = '/api/37/interaction?cb=main.my37&v=' + ref.toFixed(0)
         jQuery.get(url, null)
     }
     , my37: function (obj) {
@@ -146,7 +146,7 @@ var main = {
     }
     , AddMonad: function () {
 
-        var url = '/api/200/v1/task/new'
+        var url = '/api/37/v1/task/new'
         ajax.GET(url, this._addMonadPost.bind(this))
 
     }
@@ -200,7 +200,7 @@ var main = {
             if (this.todos[i].Id)
                 auid.push(this.todos[i].Id)
         }
-        var url = '/api/200/v1/todo/list?_=' + auid.join('|')
+        var url = '/api/37/v1/todo/list?_=' + auid.join('|')
         ajax.GET(url, this._showtodo.bind(this))
     }
     , _showtodo: function (msg) {
@@ -265,7 +265,7 @@ var main = {
         location.href = '/'
     }
     , ShowRecCode: function (event) {
-        var url = '/api/200/v1/my/code'
+        var url = '/api/37/v1/my/code'
         ajax.GET(url, this._showRecommandCode.bind(this));
     }
     , _showRecommandCode: function (msg) {
@@ -348,7 +348,7 @@ var main = {
         , exec: function (mesId, statu) {
             this.statu = statu
             this.auid = mesId
-            var url = '/api/200/v1/task/find/' + mesId
+            var url = '/api/37/v1/task/find/' + mesId
             ajax.GET(url, this._findMes.bind(this))
         }
         , _findMes: function (msg) {
@@ -407,7 +407,7 @@ var main = {
             var tmpClick = newP.getAttribute('onclick').replace('true', 'false')
             newP.setAttribute('onclick', tmpClick)
             areaBottom.appendChild(newP)
-            var url = '/api/200/v1/task/submit/' + id
+            var url = '/api/37/v1/task/submit/' + id
             ajax.GET(url, this.addResult.bind(this));
             main.goon()
         }
@@ -424,7 +424,7 @@ var main = {
     , Audit: {
         Ok: function (id) {
             if (!window.confirm('确定收到红包了吗？')) return
-            var url = '/api/200/v1/todo/submit/' + id
+            var url = '/api/37/v1/todo/submit/' + id
             this.id = "au_li_" + id
             ajax.GET(url, this._auditOk.bind(this));
             main.goon()
@@ -467,7 +467,7 @@ var main = {
         , Not: function (id) {
             var liId = "au_li_" + id
             document.getElementById(liId).style.display = 'none'
-            //   var url = '/api/200/v1/todo/not/' + id
+            //   var url = '/api/37/v1/todo/not/' + id
             // ajax.GET(url, this._notTodo.bind(this))
         }
         , _notTodo: function (msg) {
@@ -670,7 +670,7 @@ var my = {
         if (stat) {
             return
         }
-        var url = '/api/200/v1/my/friendster'
+        var url = '/api/37/v1/my/friendster'
         ajax.GET(url, this.friendsterOk.bind(this))
     }
     , friendsterOk: function (msg) {
@@ -724,7 +724,7 @@ var my = {
             return
         }
         var mob = el.innerText
-        var url = '/api/200/v1/my/relation/' + mob
+        var url = '/api/37/v1/my/relation/' + mob
         ajax.GET(url, this._showUserInfo.bind(this, el))
 
     }
@@ -754,7 +754,7 @@ var my = {
         }
     }
     , update: function () {
-        var url = '/api/200/v1/my/edit'
+        var url = '/api/37/v1/my/edit'
         var data = DataCompp("edit")
         ajax.POST(url, data, this._updateSuccess)
     }
