@@ -116,6 +116,10 @@ func (cate *Monad) FindById(id int64) *Monad {
 }
 
 func (data *Monad) Edit() {
+	if data == nil {
+		return
+	}
+
 	_, err := util.Eng.Id(data.Id).Update(data)
 	if err != nil {
 		fmt.Println(err)

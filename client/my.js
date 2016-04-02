@@ -41,7 +41,7 @@ var my = {
 
     , exit: function () {
         cookie.Del('token')
-        cookie.Del(my37.r.Mobile + "today")
+        cookie.Del(my37.u.Mobile + "today")
         var url = '/api/sso/exit';
         ajax.GET(url, this.exitCall);
     }

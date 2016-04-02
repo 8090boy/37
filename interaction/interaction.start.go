@@ -31,7 +31,7 @@ func init() {
 	//	confPath := wd + util.GetSysSplit() + confFileName
 	confPath := wd + util.GetSysSplit() + "interaction" + util.GetSysSplit() + confFileName
 	fmt.Println(confPath)
-	conf = util.SetConfig(confPath)
+	conf = controller.SetConfig(confPath)
 
 	if conf.Get("common", "showSQL") == "true" {
 		util.InitDB(conf, true)

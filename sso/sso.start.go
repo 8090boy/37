@@ -23,7 +23,7 @@ func init() {
 		confFileName = "conf_dev.ini"
 	}
 	confPath := wd + util.GetSysSplit() + "sso" + util.GetSysSplit() + confFileName
-	conf = util.SetConfig(confPath)
+	conf = common.SetConfig(confPath)
 	if conf.Get("sysinfo", "showSQL") == "true" {
 		util.InitDB(conf, true)
 	} else {

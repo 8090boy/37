@@ -81,10 +81,10 @@ func NewTask(res rest.ResponseWriter, req *rest.Request) {
 	parentRela := new(model.Relational)
 	parMonad := new(model.Monad)
 	flag := false
-	//var state bool
+
+	//
 	if myRelational.CurrentMonad == 0 {
-		// parentRela, parMonad, flag = newMain(myMonad, myRelational) // 推荐人rela，主单
-		parentRela, parMonad, flag = newSub(myMonad, myRelational, nil)
+		parentRela, parMonad, flag = newMain(myMonad, myRelational) // 推荐人rela，主单
 		resultClent["isMain"] = true
 		// 出主单失败
 		if !flag {
@@ -117,7 +117,6 @@ func NewTask(res rest.ResponseWriter, req *rest.Request) {
 			return
 		}
 	}
-
 	// 因为对方上级单子处于冻结状态
 	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
 	if parentRela.Referrer != "top" {
@@ -179,14 +178,39 @@ func newMain(myMonad *model.Monad, myRela *model.Relational) (*model.Relational,
 	if parentMainMonad.Id == 0 {
 		return nil, nil, false
 	}
-	// 在父级主单下找空位
-	parMonad := findMonadChilds(parentMainMonad)
-	if parMonad == nil {
-		return nil, nil, false
+	var parMonad *model.Monad = nil
+	// is global
+	overall := conf.Get("common", "overall")
+	// 全局查找单子空位
+	if strings.ToLower(overall) == "true" {
+		// 寻找本条线顶级37账号
+		var topRelational *model.Relational = nil
+		topRelational = findTopRelational(myRela)
+		if topRelational == nil {
+			return nil, nil, false
+		}
+		topMonad := myMonad.ById(topRelational.CurrentMonad)
+		if topMonad == nil {
+			return nil, nil, false
+		}
+
+		parMonad = findMonadChilds(topMonad)
+		if myRela.Id == parMonad.Pertain && strings.ToLower(myRela.Referrer) != "top" {
+			return nil, nil, false
+		}
+	} else {
+		// 在父级主单下找空位
+		parMonad = findMonadChilds(parentMainMonad)
+		if parMonad == nil {
+			return nil, nil, false
+		}
+		if parMonad.Id == 0 {
+			return nil, nil, false
+		}
+
 	}
-	if parMonad.Id == 0 {
-		return nil, nil, false
-	}
+
+	//
 	myMonad.ParentMonad = parMonad.Id
 
 	myMainMonadId, _ := myMonad.Add()
@@ -281,7 +305,7 @@ func validateRole(req *rest.Request) (bool, *user.User) {
 	if err != nil || cookie.Value == "" {
 		return false, nil
 	}
-	conf = util.GetConfig()
+	conf = GetConfig()
 	byTokenUrl := conf.Get("sso", "url") + conf.Get("sso", "byToken")
 	userInfoByte := util.GetUserInfo(byTokenUrl, cookie.Value)
 	if len(userInfoByte) < 1 {

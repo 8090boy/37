@@ -4,7 +4,6 @@ import (
 	"fmt"
 	model "interaction/models"
 	manage "interaction/models/manage"
-	"my/util"
 
 	"time"
 )
@@ -23,7 +22,7 @@ func InitData() {
 
 //初始化直接加入37
 func initTJZ(mobile, referrerId string, parentMonadId int64) {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	relational := &model.Relational{}
 	relational.Mobile = mobile
 	relational.Referrer = referrerId
@@ -55,7 +54,7 @@ func initTJZ(mobile, referrerId string, parentMonadId int64) {
 // 创建系统股东号码
 // 新加股东号码，管理者号码
 func initRelationalAndMonadData(topMob, refMob string) {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	mobile := topMob
 	relational := &model.Relational{}
 	relational.Mobile = mobile

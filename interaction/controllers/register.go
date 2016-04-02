@@ -42,7 +42,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	alias = util.RegexpFileter.ReplaceAllString(alias, "")
 
 	//
-	conf = util.GetConfig()
+	conf = GetConfig()
 	if referrerId == "" {
 		util.WriteJSON(w, 4)
 		return

@@ -9,7 +9,7 @@ import (
 
 // get my infomation
 func Myinfo(res http.ResponseWriter, req *http.Request) {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	callback := req.FormValue("cb")
 	var sweet map[string]interface{} = make(map[string]interface{})
 	sweet["state"] = 0

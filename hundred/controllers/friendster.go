@@ -132,7 +132,7 @@ func MyRelationUser(rep rest.ResponseWriter, req *rest.Request) {
 
 // 邀请的动态码
 func InvitationCode(rep rest.ResponseWriter, req *rest.Request) {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	userA := findUser(req)
 	result := ""
 	if userA == nil {

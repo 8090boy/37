@@ -14,6 +14,21 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
+var conf *util.Config = nil
+
+func SetConfig(filepath string) *util.Config {
+	if conf != nil {
+		return conf
+	}
+	conf = new(util.Config)
+	conf.Filepath = filepath
+	return conf
+}
+
+func GetConfig() *util.Config {
+	return conf
+}
+
 // 校验用户请求信息
 func validateUserInfo(req *http.Request) (bool, *user.User) {
 
@@ -24,7 +39,7 @@ func validateUserInfo(req *http.Request) (bool, *user.User) {
 	if err != nil || cookie.Value == "" {
 		return false, nil
 	}
-	conf = util.GetConfig()
+	conf = GetConfig()
 	getTokenUrl := conf.Get("sso", "url") + conf.Get("sso", "byToken")
 	userInfoByte := util.GetUserInfo(getTokenUrl, cookie.Value)
 
@@ -196,7 +211,7 @@ func findParentMonad(monad *model.Monad, layer int) *model.Monad {
 
 // 根据 id 查找user info
 func findUserById(id string) *user.User {
-	conf := util.GetConfig()
+	conf := GetConfig()
 	if id == "top" {
 		return nil
 	}
@@ -209,7 +224,7 @@ func findUserById(id string) *user.User {
 
 // 根据 mob 查找user info
 func findUserByMob(mob string) *user.User {
-	conf := util.GetConfig()
+	conf := GetConfig()
 	tmpUser := new(user.User)
 	ssoUrl := conf.Get("sso", "url")
 	tmpUserByte := util.Get(ssoUrl + "/find?k=mob&v=" + mob)
@@ -221,7 +236,7 @@ func findUserByMob(mob string) *user.User {
 // 根据token查找user info
 
 func byToken(token string, userRef *user.User) {
-	conf := util.GetConfig()
+	conf := GetConfig()
 	// Access token corresponding user information
 	byTokenUrl := conf.Get("sso", "url") + conf.Get("sso", "byToken")
 	userInfoByte := util.GetUserInfo(byTokenUrl, token)
@@ -327,7 +342,7 @@ func findUserInfoByUser(userA *user.User) *user.User {
 
 // 更具request 寻找user
 func findUser(req *rest.Request) *user.User {
-	conf = util.GetConfig()
+	conf = GetConfig()
 
 	cookie, _ := req.Cookie("token")
 	if cookie == nil {
@@ -347,7 +362,7 @@ func findUser(req *rest.Request) *user.User {
 
 // 根据token 查找 user、relational、mainMonad
 func findUserInfo(req *rest.Request) map[string][]byte {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	result := make(map[string][]byte)
 	result["user"] = nil
 	result["relational"] = nil

@@ -3,7 +3,6 @@ package controllers
 import (
 	model "interaction/models"
 	"interaction/models/manage"
-	"my/util"
 	"sso/user"
 	"strconv"
 	"strings"
@@ -93,7 +92,7 @@ func NotTodo(rep rest.ResponseWriter, req *rest.Request) {
 // 设置审核状态或移除、删除审核信息
 // 激活、解冻别人
 func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	// 返回信息
 	result := make(map[string]interface{})
 	to := req.PathParam("to")

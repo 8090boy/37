@@ -14,7 +14,20 @@ const (
 	IndexUrl = "/index.html"
 )
 
-var conf *util.Config
+var conf *util.Config = nil
+
+func SetConfig(filepath string) *util.Config {
+	if conf != nil {
+		return conf
+	}
+	conf = new(util.Config)
+	conf.Filepath = filepath
+	return conf
+}
+
+func GetConfig() *util.Config {
+	return conf
+}
 
 // 找回密码
 func Restore(res http.ResponseWriter, req *http.Request) {
@@ -49,7 +62,7 @@ func Restore(res http.ResponseWriter, req *http.Request) {
 
 func sendMail(to, username string) error {
 	// 获取配置
-	conf = util.GetConfig()
+	conf = GetConfig()
 	host := conf.Get("email", "serveraddr")
 	user := conf.Get("email", "user")
 	password := conf.Get("email", "password")
@@ -78,7 +91,7 @@ func sendMail(to, username string) error {
 
 // 登录
 func Login(res http.ResponseWriter, req *http.Request) {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	// urlRef := conf.Get("37client", "serverName") + conf.Get("37client", "index")
 	//loginIndexUrl := conf.Get("37client", "protocol") + urlRef
 	loginOverdue := conf.Get("sysinfo", "loginOverdue")

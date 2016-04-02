@@ -145,10 +145,8 @@ var main = {
         this.reloadPage()
     }
     , AddMonad: function () {
-
         var url = '/api/200/v1/task/new'
         ajax.GET(url, this._addMonadPost.bind(this))
-
     }
     , _addMonadPost: function (msg) { 
         //s20//h小时//d天

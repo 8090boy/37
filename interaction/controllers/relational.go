@@ -20,7 +20,7 @@ var lockValidate sync.Mutex
 func Myrelational(res http.ResponseWriter, req *http.Request) {
 	lockValidate.Lock()
 	defer lockValidate.Unlock()
-	conf = util.GetConfig()
+	conf = GetConfig()
 	callback := req.FormValue("cb")
 	var sweet map[string]interface{} = make(map[string]interface{})
 	sweet["state"] = 0
@@ -216,7 +216,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 // 是否应该出单
 // 出单了就返回 true,没有出单返回 false
 func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
-	conf = util.GetConfig()
+	conf = GetConfig()
 	// 收入大于支出时，需要出单
 	incomeIsOk := myRelational.Income > myRelational.Spending
 	// 上次出单时间多久？，需要出单
