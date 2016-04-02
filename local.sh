@@ -9,6 +9,7 @@ rm -f ./interaction.start
 rm -f ./sso.start
 rm -f ./hundred.start
 #
+<<<<<<< HEAD
 echo "-------kill current process-----------"
 ssopid=`pgrep sso.start`
 kill -15 ${ssopid}
@@ -22,6 +23,18 @@ sleep 2
 #
 ps
 echo "--------build  sso,hundred,interaction------------"
+=======
+ssopid=`pgrep sso.start`
+kill -9 ${ssopid}
+inpid=`pgrep interaction.s`
+kill -9 ${inpid}
+hundredpid=`pgrep hundred.s`
+kill -9 ${hundredpid}
+
+echo "-----------------------"
+ps aux | grep .start
+echo "--------build------------"
+>>>>>>> 65ae89ef6e75325aa8b1103bbc6b8f172d9d716c
 # build
 export GOPATH=${gopath}
 go build -i sso/sso.start.go
