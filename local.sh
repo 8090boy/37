@@ -4,11 +4,11 @@ rm -f ./interaction.start
 rm -f ./sso.start
 rm -f ./hundred.start
 #
-ssopid=`pgrep ./sso.start`
+ssopid=`pgrep sso.start`
 kill -9 ${ssopid}
-inpid=`pgrep ./interaction.start`
+inpid=`pgrep interaction.s`
 kill -9 ${inpid}
-hundredpid=`pgrep ./hundred.start`
+hundredpid=`pgrep hundred.s`
 kill -9 ${hundredpid}
 
 echo "-----------------------"
