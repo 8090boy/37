@@ -27,5 +27,5 @@ func InitDB(conf *Config, show bool) {
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	Eng.ShowSQL=show
+	Eng.ShowSQL(show)
 }

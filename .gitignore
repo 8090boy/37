@@ -25,3 +25,4 @@ _testmain.go
 *.start
 *.out
 prefile.ini
+InitDB.go
