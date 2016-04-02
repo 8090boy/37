@@ -46,6 +46,7 @@ func main() {
 	mux.HandleFunc("/find", common.Find)
 	mux.HandleFunc("/byids", common.ByIds)
 	mux.HandleFunc("/byToken", common.ByToken)
+	mux.HandleFunc("/myinfo", common.Myinfo)
 	listenAndServe := conf.Get("sysinfo", "port")
 	fmt.Printf("%v SSO Start OK.\n", listenAndServe)
 	http.ListenAndServe(listenAndServe, mux)

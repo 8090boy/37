@@ -25,8 +25,9 @@ func validateUserInfo(req *http.Request) (bool, *user.User) {
 		return false, nil
 	}
 	conf = util.GetConfig()
-	byTokenUrl := conf.Get("sso", "url") + conf.Get("sso", "byToken")
-	userInfoByte := util.GetUserInfo(byTokenUrl, cookie.Value)
+	getTokenUrl := conf.Get("sso", "url") + conf.Get("sso", "byToken")
+	userInfoByte := util.GetUserInfo(getTokenUrl, cookie.Value)
+
 	if len(userInfoByte) < 1 {
 		return false, nil
 	}
@@ -218,6 +219,7 @@ func findUserByMob(mob string) *user.User {
 }
 
 // 根据token查找user info
+
 func byToken(token string, userRef *user.User) {
 	conf := util.GetConfig()
 	// Access token corresponding user information

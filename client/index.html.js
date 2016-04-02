@@ -18,14 +18,28 @@ function cb(obj) {
 }
 
 function start() {
-    var recom = location.search.split("r=")[1]
+    var recomH = location.search.split("rh=")[1]
+    var recomI = location.search.split("ri=")[1]
     var ref = location.search.split("token=")[1]
-    if (recom) {
-        if (/^[\d|\w]{6,10}$/i.test(recom)) {
+    
+    if (recomI) {
+        if (/^[\d|\w]{6,10}$/i.test(recomI)) {
             surface.on("in")
-            document.querySelector('input[name="referrerId"]').value = recom
+            document.querySelector('input[name="referrerId"]').value = recomI
+            addListener(innreg,'click',inn.reg,bind(inn,37))
         }
-    } else {
+        return
+    }
+    
+     if (recomH) {
+        if (/^[\d|\w]{6,10}$/i.test(recomH)) {
+            surface.on("in")
+            document.querySelector('input[name="referrerId"]').value = recomH
+            addListener(innreg,'click',inn.reg.bind(inn,200))
+        }
+        return
+    }
+    
         var token, overdue;
         if (ref) {
             ref = ref.replace('&','')
@@ -37,16 +51,14 @@ function start() {
             if (overdue) cookie.Set('token', token)
             surface.on("index")
             var userCb = document.createElement('script')
-            userCb.src = '/api/37/myinfo?cb=cb&token=' + token
+            userCb.src = '/api/sso/myinfo?cb=cb&token=' + token
             document.body.appendChild(userCb)
         } else {
             cookie.Del("token")
             var currentUrl = location.href
             location.href = "/api/sso/?redirectUrl=" + currentUrl
         }
-
-    }
-
+ 
 
 }
 window.onload = start
@@ -63,11 +75,18 @@ var inn = {
               break;
        
       }
-    
-        
     }
-    , reg: function () {
-        var url = '/api/37/signin'
+    , reg: function (tag) {
+        var url ;
+        switch (tag) {
+            case 200:
+                url = '/api/200/signin'
+                break;
+            case 37:
+                url = '/api/37/signin'
+                break;
+        }
+      
         // 校验
         if (!this.validate("post")) return;
         var data = this._dataComp("post")

@@ -929,6 +929,7 @@ line-height: 42px;
 text-align: center;
 margin: 0px auto;
 position: absolute;
+    background-color: #fff3b6;
 }
 #dialog .shrea .input {
 position: absolute;

@@ -274,9 +274,9 @@ var main = {
         var shrea = dialog.querySelector('.shrea')
         var input = shrea.querySelector('.input')
         if (location.port) {
-            input.innerText = location.protocol + "//" + location.hostname + ":" + location.port + "/?r=" + msg
+            input.innerText = location.protocol + "//" + location.hostname + ":" + location.port + "/?ri=" + msg
         } else {
-            input.innerText = location.protocol + "//" + location.hostname + "/?r=" + msg
+            input.innerText = location.protocol + "//" + location.hostname + "/?ri=" + msg
         }
 
         dialog.style.display = 'block'

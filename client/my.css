@@ -577,7 +577,7 @@ padding: 0.5em 0px;
 text-align: center;
 font-size:  1.2em;
 background-color: #B5B5B5;
-margin: 1px auto;
+margin: 10px auto;
 }
 .button.subBtn {
 background-color: #F7DF6B;
@@ -586,7 +586,7 @@ width: 80%;
 }
 .button.top20{
 margin:0px;
-border-top: 0.5em solid #eee;
+margin-top: 3em;
 
 }
 .gray{
