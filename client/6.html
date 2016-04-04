@@ -6,7 +6,10 @@
 <script src="jquery-2.2.1.min.js"></script>
 <script src="base.js"></script>
 <script src="6.js"></script>
-<script src="/api/37/myinfo?cb=ca"></script>
+<script >
+ var paltform = cookie.Get('paltform')
+jQuery.get('/api/'+ paltform +'/myinfo?cb=ca',null,null)
+</script>
 <section id="info">
     <a onclick="my.init()"></a>
     <div>
@@ -51,5 +54,6 @@
             <a class="button subBtn" onclick="my.update()">提交</a>
         </form>
     </div>
+    <a class="button" href="/">平台主页</a>
     <a class="button top20 gray" onclick="my.exit()">退出登录</a>
 </section>

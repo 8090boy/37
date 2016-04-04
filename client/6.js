@@ -12,7 +12,8 @@ function ca(my) {
 var main = {
      goon : function(){
         var ref = Math.random() * 10000
-        var url = '/api/37/interaction?cb=main.init&v=' + ref.toFixed(0)
+        
+        var url = '/api/'+ paltform +'/interaction?cb=main.init&v=' + ref.toFixed(0)
         jQuery.get(url,null)
     },
     init: function (obj) {
@@ -142,7 +143,7 @@ var main = {
 
     }
     , AddMonad: function () {
-        var url = '/api/37/v1/task/new'
+        var url = '/api/'+ paltform +'/v1/task/new'
         ajax.GET(url, this._addMonadPost.bind(this))
     }
     , _addMonadPost: function (msg) {
@@ -209,7 +210,7 @@ var main = {
 
         }
 
-        var url = '/api/37/v1/todo/list?sso=' + sso.join('|') + '&mon=' + mon.join('|') + '&rela=' + rela.join('|')
+        var url = '/api/'+ paltform +'/v1/todo/list?sso=' + sso.join('|') + '&mon=' + mon.join('|') + '&rela=' + rela.join('|')
         ajax.GET(url, this._showtodo.bind(this))
     }
     , _showtodo:function(msg) {
@@ -284,7 +285,7 @@ var main = {
         location.href = '/'
     }
     , ShowRecCode: function (event) {
-        var url = '/api/37/v1/my/code'
+        var url = '/api/'+ paltform +'/v1/my/code'
         ajax.GET(url, this._showRecommandCode.bind(this));
     }
     , _showRecommandCode: function (msg) {
@@ -315,7 +316,7 @@ var main = {
             var tmpClick = newP.getAttribute('onclick').replace('true', 'false')
             newP.setAttribute('onclick', tmpClick)
             areaBottom.appendChild(newP)
-            var url = '/api/37/v1/task/submit/' + id
+            var url = '/api/'+ paltform +'/v1/task/submit/' + id
             ajax.GET(url, this.addResult.bind(this));
 
         }
@@ -332,7 +333,7 @@ var main = {
     , Audit: {
         Ok: function (id) {
             
-            var url = '/api/37/v1/todo/submit/' + id
+            var url = '/api/'+ paltform +'/v1/todo/submit/' + id
             this.id = "li" + id
              var ckb = document.querySelector("#"+this.id).firstChild
              if (ckb.checked){
@@ -455,7 +456,7 @@ var my = {
         }
     }
     , friendster: function () {
-        var url = '/api/37/v1/my/friendster'
+        var url = '/api/'+ paltform +'/v1/my/friendster'
         ajax.GET(url, this.friendsterOk.bind(this))
     }
     , friendsterOk:function(msg) {
@@ -508,7 +509,7 @@ var my = {
             return
         }
         var mob = el.innerText
-        var url = '/api/37/v1/my/relation/' + mob
+        var url = '/api/'+ paltform +'/v1/my/relation/' + mob
         ajax.GET(url, this._showUserInfo.bind(this, el))
 
     }
@@ -547,7 +548,7 @@ var my = {
         }
     }
     , update: function () {
-        var url = '/api/37/v1/my/edit'
+        var url = '/api/'+ paltform +'/v1/my/edit'
         var data = DataComp("edit")
         ajax.POST(url, data, this._updateSuccess)
     }

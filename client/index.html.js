@@ -13,8 +13,6 @@ function cb(obj) {
     }
     
     
-    
-    
 }
 
 function start() {
@@ -66,6 +64,7 @@ window.onload = start
 var inn = {
     join: function (paltform) {
       // if (!window.obj.r && !window.obj.s) return alert('非团队用户不能玩啥！')
+      cookie.Set('paltform',paltform)
       switch (paltform) {
           case 37:
               location.href = '/37.html'

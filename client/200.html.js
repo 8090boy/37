@@ -222,7 +222,7 @@ var main = {
                 htm.push('<h3 class="sum" >￥&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + sum + '</h3>')
                 // htm.push('<h4>发红包人</h4>')
                 var tempStr = '对方：' +cla + '&nbsp;级，'
-                tempStr += isMa ? '主单':'子单'
+                //  tempStr += （isMa==='1'||isMa>0） ? '主单':'子单'
                 htm.push('<p class="class"  >' + tempStr + '</b></p>')
                 htm.push('<p class="alias"  >昵称：<b  onclick="copy()" >' + alias + '</b></p>')
                 htm.push('<p class="wechat"  >微信：<b  onclick="copy()" >' + wechat + '</b></p>')

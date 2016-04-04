@@ -235,22 +235,15 @@ func newSub(myMonad *model.Monad, myRela *model.Relational, myMainMonad *model.M
 		var topRelational *model.Relational = nil
 		topRelational = findTopRelational(myRela)
 		if topRelational == nil {
-			//	fmt.Println("topRelational is nil")
 			return nil, nil, false
 		}
 		topMonad := myMonad.ById(topRelational.CurrentMonad)
 		if topMonad == nil {
-			//	fmt.Println("topMonad is nil")
 			return nil, nil, false
 		}
 
 		parMonad = findMonadChilds(topMonad)
-		if myRela.Id == parMonad.Pertain && strings.ToLower(myRela.Referrer) != "top" {
-			//	fmt.Println("myRela.Id == parMonad.Pertain")
-			return nil, nil, false
-		}
 
-		// parMonad = findChildsByMonad(topMonad) // 在自己归属的主线下面找空位
 	} else { // 在自己下面找空位
 		parMonad = findChildsByMonad(myMainMonad) // 在自己主单下面找空位
 	}
@@ -261,6 +254,10 @@ func newSub(myMonad *model.Monad, myRela *model.Relational, myMainMonad *model.M
 	if parMonad.Id == 0 {
 		return nil, nil, false
 	}
+	if parMonad.Pertain == myRela.Id {
+		return nil, nil, false
+	}
+
 	myMonad.ParentMonad = parMonad.Id
 	myMonad.Add()
 	parentRela := myRela.ById(parMonad.Pertain)
