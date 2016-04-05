@@ -1,5 +1,6 @@
 #! /bin/bash
-#
+# ./build.sh dev
+# ./build.sh pro
 clearStart(){
 rm -f ./interaction.start
 rm -f ./sso.start
