@@ -133,7 +133,7 @@ var log = {
         var mask = document.querySelector(".mask")
         var copytip = document.getElementById("copytip")
         if (/\?rh=|ri=/img.test( txt)){
-            txt = txt + "<br><a href='"+txt+"'>帮注册</a>"
+            txt = txt + "<br><a href='"+txt+"' target=\"_self\" >帮注册</a>"
         }
             copytip.innerHTML='已复制：<h3>' + txt + '</h3>可直接粘贴！'
         if (status) {
