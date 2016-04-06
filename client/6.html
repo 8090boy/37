@@ -8,10 +8,7 @@
 <script src="jquery-2.2.1.min.js"></script>
 <script src="base.js"></script>
 <script src="6.js"></script>
-<script >
- var paltform = cookie.Get('paltform')
-jQuery.get('/api/'+ paltform +'/myinfo?cb=ca',null,null)
-</script>
+
 </head>
 <body>
     
@@ -44,4 +41,8 @@ jQuery.get('/api/'+ paltform +'/myinfo?cb=ca',null,null)
     <a class="button top20 gray" onclick="my.exit()">退出登录</a>
 </section>
 </body>
+<script >
+ var paltform = cookie.Get('paltform')
+jQuery.get('/api/'+ paltform +'/myinfo?cb=ca',null,null)
+</script>
 </html>
