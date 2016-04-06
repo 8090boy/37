@@ -1,7 +1,10 @@
 function ca(my) {
     if (my.state) {
         window.my37 = my
-        document.addEventListener("DOMContentLoaded", main.goon, false);
+        window.onload=function(){
+            main.goon.call(main,null)
+        }
+        //document.addEventListener("DOMContentLoaded", main.goon.bind(main), false);
     } else {
           cookie.Del("token")
         currentUrl = location.href
@@ -10,7 +13,7 @@ function ca(my) {
 }
 
 var main = {
-     goon : function(){
+     goon :function(){
         var ref = Math.random() * 10000
         
         var url = '/api/'+ paltform +'/interaction?cb=main.init&v=' + ref.toFixed(0)
