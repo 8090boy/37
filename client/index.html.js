@@ -24,7 +24,7 @@ function start() {
         if (/^[\d|\w]{6,10}$/i.test(recomI)) {
             surface.on("in")
             document.querySelector('input[name="referrerId"]').value = recomI
-            addListener(innreg,'click',inn.reg,bind(inn,37))
+            addListener(innreg,'click',inn.reg.bind(inn,37))
         }
         return
     }
