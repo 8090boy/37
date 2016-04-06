@@ -141,17 +141,14 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 
 	// 有收入的会员都要产生单子
 	if relational.Income > 0 {
-		var myIsNewMonadCound int64 = 0
 		myAus, countRef := new(model.Audit).AuditsByPropRela(relational.Id)
-
+		var firstTaskValue int64 = relational.Spending
 		if countRef > 0 {
 			for _, au := range myAus {
-				if au.Isnewmonad == 1 {
-					myIsNewMonadCound++
-				}
+				firstTaskValue = firstTaskValue + INCOME[au.Count]
 			}
 		}
-		firstTaskValue := relational.Spending + (myIsNewMonadCound * INCOME[0])
+
 		if relational.Income > firstTaskValue {
 			// 正常状态时需要自动出单
 			if relational.Status == RELA_STATUS_NORMAL {
