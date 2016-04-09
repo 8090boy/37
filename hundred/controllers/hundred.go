@@ -6,8 +6,8 @@ import (
 	"sso/user"
 	"sync"
 
-	model "interaction/models"
-	manage "interaction/models/manage"
+	model "hundred/models"
+	manage "hundred/models/manage"
 	"my/util"
 	"net/http"
 	"strconv"
@@ -87,7 +87,6 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
 	}
-
 	// 有收益的普通会员
 	if relational.Income > 0 && relational.Referrer != "top" {
 		// 检查自己状态
@@ -138,14 +137,14 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		//		}
 
 	}
-
 	// 有收入的会员都要产生单子
 	if relational.Income > 0 {
 		myAus, countRef := new(model.Audit).AuditsByPropRela(relational.Id)
 		var firstTaskValue int64 = relational.Spending
 		if countRef > 0 {
 			for _, au := range myAus {
-				firstTaskValue = firstTaskValue + INCOME[au.Count]
+				firstTaskValue += INCOME[au.Count]
+
 			}
 		}
 
@@ -157,7 +156,6 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		}
 
 	}
-
 	if myMainmonad.Id > 0 {
 		sweet["m"] = *myMainmonad
 	}

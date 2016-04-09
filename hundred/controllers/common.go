@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
-	model "interaction/models"
-	manage "interaction/models/manage"
+	model "hundred/models"
+	manage "hundred/models/manage"
 	"math"
 	"my/util"
 	"net/http"

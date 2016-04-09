@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	model "interaction/models"
+	model "hundred/models"
 	"my/util"
 	"sso/user"
 	"strconv"

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	model "interaction/models"
+	model "hundred/models"
 )
 
 // 关系户推荐的人员数量级下层人员推荐总和

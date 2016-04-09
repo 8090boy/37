@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 
-	model "interaction/models"
+	model "hundred/models"
 	"my/util"
 	"sso/user"
 	"strconv"

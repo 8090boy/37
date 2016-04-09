@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	model "interaction/models"
-	manage "interaction/models/manage"
+	model "hundred/models"
+	manage "hundred/models/manage"
 
 	"time"
 )

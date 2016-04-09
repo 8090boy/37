@@ -1,6 +1,6 @@
 package controllers
 
-var INCOME []int64 = []int64{100, 100, 200, 300, 400, 500, 600, 700, 800}
+var INCOME []int64 = []int64{20, 20, 20, 20, 50, 50, 100, 100}
 
 const (
 	RELA_STATUS_UNBORN  int = iota
