@@ -142,7 +142,7 @@ var main = {
         e = window.event || event
         var el = e.target
         el.parentElement.parentElement.style.display = "none"
-        this.reloadPage()
+        this.goon()
     }
     , AddMonad: function () {
         var url = '/api/200/v1/task/new'
@@ -392,7 +392,7 @@ var main = {
     }
     , closeTaskList: function () {
         document.querySelector(".sdfi.taskList").style.display = 'none'
-        main.reloadPage()
+        main.goon()
 
     }
     , Todo: {
@@ -527,7 +527,7 @@ var main = {
             if (!window.auOkCount) return
             var tmpCount = window.auOkCount + my37.r.Income
             main.CountUpdate('income', tmpCount)
-            main.reloadPage()
+            main.goon()
         }
 
 

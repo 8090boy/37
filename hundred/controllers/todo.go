@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	model "hundred/models"
 	"hundred/models/manage"
 	"sso/user"
@@ -206,9 +207,12 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("ok")
 		return
 	}
+	fmt.Println("-----------------1--------------------")
+	//
 	// 产生自己的任务 开始
 	// 产生自己的任务 开始
 	// 产生自己的任务 开始
+	//
 	myAuMonad := new(model.Monad)
 	myAuMonad = myAuMonad.ById(audit.MonadId)
 	// 任何单子级别大于6将不产生任务
@@ -217,7 +221,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson(result)
 		return
 	}
-	myAuMonad.Count = myAuMonad.Count + 1
+
 	// 是自己主单时
 	// 需要推荐人员数量限制
 	if myAuMonad.IsMain == 1 && myAuMonad.Task >= 2 {
@@ -229,11 +233,13 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 			return
 		}
 	}
+
 	// 收一次款自己会有一次记录
+	myAuMonad.Count = myAuMonad.Count + 1
+	// 自己的单子产生一次任务增加一次任务次数
 	myAuMonad.Task = myAuMonad.Task + 1
 	myAuMonad.Edit()
 	//
-
 	// 获取提交者
 	targetLayer := myAuMonad.Count + 1
 	consume := INCOME[targetLayer]
@@ -243,6 +249,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	targetRelaAmin := new(manage.Relaadmin)
 	// 审核方单子不存在
 	if targetMonad == nil {
+		fmt.Println("---------------- targetMonad == nil-------------------")
 		// 设置收款人为运营组帐号
 		// 给运营组帐号添加待办
 		result["influence"] = true
@@ -263,6 +270,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		targetRela.Loss = targetRela.Loss + income
 		targetRela.UpdateByColsName("loss")
 		if targetRela.Referrer == "top" {
+			fmt.Println("----------------targetRela.Referrer == 'top'-------------------")
 			result["influence"] = true
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id)
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
@@ -272,13 +280,15 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		} else {
 			targetRelaAmin = targetRelaAmin.FindByRelaId(0)
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
+			fmt.Println("----------------targetRela.Referrer != 'top'-------------------")
 			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
 			rep.WriteJson(result)
 			return
 		}
 	}
 	result["influence"] = true
-	createAudit(myAuMonad, targetMonad, myRela, targetRela, 0, 2)
+	ddf(myAuMonad, targetMonad, myRela, targetRela, 0, 2)
+	fmt.Println("----------------common------------------")
 	//
 	//
 	//
@@ -403,14 +413,12 @@ func changeProposerInfo(au *model.Audit) string {
 // 2任务,1已审核待办，0未审核待办
 // 创建普通的待办和自己的任务
 // specialUserId 特殊审核人 sso id
-func createAudit(proposerMonad, targetMonad *model.Monad,
-	proposerRela, targetRela *model.Relational,
-	specialUserId int64, stat int) {
+func createAudit(proposerMonad, targetMonad *model.Monad, proposerRela, targetRela *model.Relational, specialUserId int64, stat int) {
 	newAudit := new(model.Audit)
-	newAudit.Status = stat // 2任务；非2是待办,待办分1已审核,0未审核
+	newAudit.Status = stat //1已审核待办,0未审核待办；2任务；
 	newAudit.Create = time.Now().Local()
 	newAudit.Operation = newAudit.Create
-	// 提交者、发起者
+	// 提交者、发起者A za
 	newAudit.ProposerCount = proposerMonad.Count
 	newAudit.ProposerMonadId = proposerMonad.Id
 	newAudit.ProposerRelationalId = proposerMonad.Pertain

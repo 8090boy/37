@@ -147,7 +147,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 
 			}
 		}
-
+		fmt.Printf("relational.Income > firstTaskValue : %v > %v \n ", relational.Income, firstTaskValue)
 		if relational.Income > firstTaskValue {
 			// 正常状态时需要自动出单
 			if relational.Status == RELA_STATUS_NORMAL {
@@ -235,6 +235,7 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 		fmt.Println("create monad false. 2")
 		return false
 	}
+
 	// 更新自己出单时间
 	myRelational.PrevNewMonad = newPointer
 	myRelational.Edit()
