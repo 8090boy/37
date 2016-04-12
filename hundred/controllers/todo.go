@@ -240,6 +240,14 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myAuMonad.Task = myAuMonad.Task + 1
 	myAuMonad.Edit()
 	//
+	//
+	sta := accpetCreate(myRela)
+	if !sta {
+		result["influence"] = false
+		rep.WriteJson(result)
+		return
+	}
+	//
 	// 获取提交者
 	targetLayer := myAuMonad.Count + 1
 	consume := INCOME[targetLayer]
@@ -287,7 +295,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		}
 	}
 	result["influence"] = true
-	ddf(myAuMonad, targetMonad, myRela, targetRela, 0, 2)
+	createAudit(myAuMonad, targetMonad, myRela, targetRela, 0, 2)
 	fmt.Println("----------------common------------------")
 	//
 	//

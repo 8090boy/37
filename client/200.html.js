@@ -23,7 +23,12 @@ var main = {
     , goon: function () {
         var ref = Math.random() * 10000
         var url = '/api/200/interaction?cb=main.my37&v=' + ref.toFixed(0)
+        var todoAddRed = document.querySelector('.todo.addRedpackage')
+        if(todoAddRed){
+            todoAddRed.style.display='none'
+        }
         jQuery.get(url, null)
+        
     }
     , my37: function (obj) {
         if (obj.s == 2) return location.href = '6.html'

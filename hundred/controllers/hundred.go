@@ -207,10 +207,9 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	util.WriteJSONP(res, callback+"("+string(all_info)+")")
 }
 
-// 自动出单
-// 是否应该出单
-// 出单了就返回 true,没有出单返回 false
-func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
+// 是否可以出单
+func accpetCreate(myRelational *model.Relational) bool {
+
 	conf = GetConfig()
 	// 收入大于支出时，需要出单
 	incomeIsOk := myRelational.Income > myRelational.Spending
@@ -224,6 +223,22 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 		fmt.Println("create monad false. 1")
 		return false
 	}
+	// 更新自己出单时间
+	myRelational.PrevNewMonad = newPointer
+	myRelational.Edit()
+	return true
+}
+
+// 自动出单
+// 是否应该出单
+// 出单了就返回 true,没有出单返回 false
+func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
+	sta := accpetCreate(myRelational)
+
+	if !sta {
+		return false
+	}
+
 	// 出单
 	myMonad := model.NewMonad()
 	myMonad.Pertain = myRelational.Id
@@ -236,9 +251,6 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 		return false
 	}
 
-	// 更新自己出单时间
-	myRelational.PrevNewMonad = newPointer
-	myRelational.Edit()
 	// 因为对方上级单子处于冻结状态
 	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
 	if parentRela.Referrer == "top" {
