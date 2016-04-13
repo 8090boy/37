@@ -1,6 +1,6 @@
 @echo off
 ::命令提示
-echo "go run 直接运行sso,hundred,interaction !"
+echo "go run sso,hundred,interaction !"
 ::启动
 start /b go run sso/sso.start.go
 start /b go run interaction/interaction.start.go

@@ -61,6 +61,7 @@ func initRelationalAndMonadData(topMob, refMob string) {
 	relational.Referrer = "top"
 	relational.Create = time.Now()
 	relational.Prev = relational.Create
+	relational.PrevNewMonad = relational.Prev
 	relational.Status = 1
 	//
 	myUser := findUserByMob(mobile)
