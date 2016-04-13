@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"sso/user"
 	"sync"
 
@@ -147,7 +146,6 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 
 			}
 		}
-		fmt.Printf("relational.Income > firstTaskValue : %v > %v \n ", relational.Income, firstTaskValue)
 		if relational.Income > firstTaskValue {
 			// 正常状态时需要自动出单
 			if relational.Status == RELA_STATUS_NORMAL {
@@ -207,7 +205,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	util.WriteJSONP(res, callback+"("+string(all_info)+")")
 }
 
-// 是否可以出单
+// 可以出单吗
 func accpetCreate(myRelational *model.Relational) bool {
 
 	conf = GetConfig()
@@ -217,10 +215,9 @@ func accpetCreate(myRelational *model.Relational) bool {
 	interval, _ := time.ParseDuration(conf.Get("common", "interval"))
 	newPointer := myRelational.PrevNewMonad.Add(interval)
 	now := time.Now().Local()
-	prevNewMonadDateIsOk := now.After(newPointer)
+	isOk := now.After(newPointer)
 	// 是否应该出单
-	if !incomeIsOk && !prevNewMonadDateIsOk {
-		fmt.Println("create monad false. 1")
+	if !incomeIsOk || !isOk {
 		return false
 	}
 	// 更新自己出单时间
@@ -247,7 +244,6 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 	parentRela, parMonad, flag := newSub(myMonad, myRelational, myMainMonad)
 	// 没有位置
 	if !flag {
-		fmt.Println("create monad false. 2")
 		return false
 	}
 
@@ -256,7 +252,6 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 	if parentRela.Referrer == "top" {
 		// add audit
 		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
-		fmt.Println("create monad true. 3")
 		return true
 	}
 	state := false
@@ -277,6 +272,5 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 	} else {
 		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
 	}
-	fmt.Println("create monad true. 4")
 	return true
 }

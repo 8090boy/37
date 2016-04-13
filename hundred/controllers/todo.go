@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	model "hundred/models"
 	"hundred/models/manage"
 	"sso/user"
@@ -207,7 +206,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("ok")
 		return
 	}
-	fmt.Println("-----------------1--------------------")
 	//
 	// 产生自己的任务 开始
 	// 产生自己的任务 开始
@@ -257,7 +255,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	targetRelaAmin := new(manage.Relaadmin)
 	// 审核方单子不存在
 	if targetMonad == nil {
-		fmt.Println("---------------- targetMonad == nil-------------------")
 		// 设置收款人为运营组帐号
 		// 给运营组帐号添加待办
 		result["influence"] = true
@@ -278,7 +275,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		targetRela.Loss = targetRela.Loss + income
 		targetRela.UpdateByColsName("loss")
 		if targetRela.Referrer == "top" {
-			fmt.Println("----------------targetRela.Referrer == 'top'-------------------")
 			result["influence"] = true
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id)
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
@@ -288,7 +284,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		} else {
 			targetRelaAmin = targetRelaAmin.FindByRelaId(0)
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
-			fmt.Println("----------------targetRela.Referrer != 'top'-------------------")
 			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
 			rep.WriteJson(result)
 			return
@@ -296,7 +291,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	}
 	result["influence"] = true
 	createAudit(myAuMonad, targetMonad, myRela, targetRela, 0, 2)
-	fmt.Println("----------------common------------------")
 	//
 	//
 	//
