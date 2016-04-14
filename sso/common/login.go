@@ -114,6 +114,9 @@ func Login(res http.ResponseWriter, req *http.Request) {
 
 	refName := req.FormValue("username")
 	password := req.FormValue("password")
+	if password == "" {
+		password = "000000"
+	}
 	password = util.Md5Encode(password)
 	//数据安全校验、过滤
 	mobOk := util.RegexpMobile.MatchString(refName)

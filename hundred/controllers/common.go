@@ -430,8 +430,8 @@ func findChildsByMonad(mainMonad *model.Monad) *model.Monad {
 //根据主单向下找空位
 func findMonadChilds(mainMonad *model.Monad) *model.Monad {
 	monads := []*model.Monad{mainMonad}
-	dismissal, _ := strconv.Atoi(conf.Get("common", "dismissal")) // 7
-	mulriple, _ := strconv.Atoi(conf.Get("common", "mulriple"))   // 3
+	dismissal, _ := strconv.Atoi(conf.Get("common", "dismissal")) // 层数
+	mulriple, _ := strconv.Atoi(conf.Get("common", "mulriple"))   // 倍数
 	for k := 1; k <= dismissal; k++ {
 		childs, absent, isEnd := findChilds(monads, k, mulriple)
 		if isEnd {
