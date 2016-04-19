@@ -251,7 +251,7 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
 	if parentRela.Referrer == "top" {
 		// add audit
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 2)
 		return true
 	}
 	state := false
@@ -268,9 +268,9 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 		// 指定帐号
 		specialUserId := int64(3)
 		// add audit
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 0)
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 2)
 	} else {
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 2)
 	}
 	return true
 }

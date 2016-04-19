@@ -121,7 +121,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myRela := new(model.Relational)
 	// 是否特殊账户
 	if audit.Special == 1 {
-		// 自己收入增加
+		// 特殊账户收入增加
 		myRelaAdmin := new(manage.Relaadmin).FindBySsoId(userA.Id)
 		myRelaAdmin.Income = myRelaAdmin.Income + income
 		myRelaAdmin.UpdateWhereColName(myRelaAdmin.Relaid, myRelaAdmin.Ssoid)
@@ -153,14 +153,14 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	//		spendersRela.PrevNewMonad = time.Now().Local()
 	//	}
 	spendersRela.Spending = spendersRela.Spending + income
-	switch income {
-	case 20:
-		spendersRela.OneCount = spendersRela.OneCount + 1
-	case 50:
-		spendersRela.TwoCount = spendersRela.TwoCount + 1
-	case 100:
-		spendersRela.ThreeCount = spendersRela.ThreeCount + 1
-	}
+	//	switch income {
+	//	case 100:
+	//		spendersRela.OneCount = spendersRela.OneCount + 1
+	//	case 200:
+	//		spendersRela.TwoCount = spendersRela.TwoCount + 1
+	//	case 300:
+	//		spendersRela.ThreeCount = spendersRela.ThreeCount + 1
+	//	}
 
 	// 别人的主单，关系户状态
 	if spenderMainMonad != nil {
@@ -207,9 +207,9 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 	//
-	// 产生自己的任务 开始
-	// 产生自己的任务 开始
-	// 产生自己的任务 开始
+	// 产生自己的升级任务 开始
+	// 产生自己的升级任务 开始
+	// 产生自己的升级任务 开始
 	//
 	myAuMonad := new(model.Monad)
 	myAuMonad = myAuMonad.ById(audit.MonadId)
@@ -232,13 +232,14 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		}
 	}
 
-	// 收一次款自己会有一次记录
+	// 收款单子增加一次收入
 	myAuMonad.Count = myAuMonad.Count + 1
-	// 自己的单子产生一次任务增加一次任务次数
+	// 收款单子增加一次任务
 	myAuMonad.Task = myAuMonad.Task + 1
 	myAuMonad.Edit()
 	//
 	//
+	// 根据时间间隔，是否可以建立任务
 	sta := accpetCreate(myRela)
 	if !sta {
 		result["influence"] = false

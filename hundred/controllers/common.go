@@ -198,9 +198,15 @@ func findMonadByMyauditsInMyMonadsAndClassIsZero(myAudits []*model.Audit, myMona
 func findParentMonad(monad *model.Monad, layer int) *model.Monad {
 	targetMonad := new(model.Monad)
 	targetMonad = monad
+	if monad.ParentMonad == 0 {
+		return nil
+	}
 	for k := 1; k <= layer; k++ {
 		tmpMon := targetMonad.ById(targetMonad.ParentMonad)
 		if tmpMon == nil {
+			return nil
+		}
+		if tmpMon.ParentMonad == 0 {
 			return nil
 		}
 		targetMonad = tmpMon

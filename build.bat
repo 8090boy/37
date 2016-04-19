@@ -1,4 +1,4 @@
-@echo off
+@echo on
 ::ÃüÁîÌáÊ¾
 echo "go run sso,hundred,interaction !"
 ::Æô¶¯
