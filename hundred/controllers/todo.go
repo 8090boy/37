@@ -220,6 +220,12 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
+	// 收款单子增加一次收入
+	myAuMonad.Count = myAuMonad.Count + 1
+	// 收款单子增加一次任务
+	myAuMonad.Task = myAuMonad.Task + 1
+	myAuMonad.Edit()
+
 	// 是自己主单时
 	// 需要推荐人员数量限制
 	if myAuMonad.IsMain == 1 && myAuMonad.Task >= 2 {
@@ -231,21 +237,16 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 			return
 		}
 	}
-
-	// 收款单子增加一次收入
-	myAuMonad.Count = myAuMonad.Count + 1
-	// 收款单子增加一次任务
-	myAuMonad.Task = myAuMonad.Task + 1
-	myAuMonad.Edit()
 	//
 	//
-	// 根据时间间隔，是否可以建立任务
-	sta := accpetCreate(myRela)
-	if !sta {
+	// 根据收入的金额 大于 当前单子对应金额 + 已经支出的金额，才能产生任务
+	// 大于1 级别的 monad
+	if !incomeGTspending(myRela, myAuMonad) {
 		result["influence"] = false
 		rep.WriteJson(result)
 		return
 	}
+
 	//
 	// 获取提交者
 	targetLayer := myAuMonad.Count + 1
@@ -310,6 +311,24 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 	rep.WriteJson("ok")
+}
+
+// income gt (>) Spending
+// and
+// monad class gt 1
+func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
+
+	if monad.Class < 2 {
+		return true
+	}
+
+	refSpending := INCOME[monad.Class+1]
+	spendingSum := rela.Spending + refSpending
+	if rela.Income > spendingSum {
+		return true
+	}
+
+	return false
 }
 
 // 根据audits数组获取人对方信息
