@@ -40,7 +40,7 @@ func initTJZ(mobile, referrerId string, parentMonadId int64) {
 	//
 	monad := model.NewMonad()
 	monad.State = 1
-	monad.Class = 6
+	monad.Class = 1
 	monad.MainMonad = 1
 	monad.IsMain = 1
 	monad.Pertain = relational.Id
@@ -73,7 +73,7 @@ func initRelationalAndMonadData(topMob, refMob string) {
 	//
 	monad := model.NewMonad()
 	monad.State = 1
-	monad.Class = 9
+	monad.Class = 1
 	monad.MainMonad = 1
 	monad.IsMain = 1
 	monad.Pertain = relational.Id

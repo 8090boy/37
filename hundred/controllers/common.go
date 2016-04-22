@@ -80,6 +80,20 @@ func findMyTodos(myRelaId int64) map[string]string {
 
 }
 
+// 任务及新单子未被确认的总金额
+func taskSum(rela *model.Relational) int64 {
+	var firstTaskValue int64 = 0
+	myAus, countRef := new(model.Audit).AuditsByPropRela(rela.Id)
+	firstTaskValue = rela.Spending
+	if countRef > 0 {
+		for _, au := range myAus {
+			firstTaskValue += INCOME[au.Count]
+
+		}
+	}
+	return firstTaskValue
+}
+
 // 检查任务是否完成，未完成将设置为冻结状态，完了就设置为正常
 func updateStatusIfTasks(rela *model.Relational, mainM *model.Monad) (*model.Relational, *model.Monad, int, int, int) {
 	firstT, secondT, threeT := findTaskForRelaId(rela.Id)

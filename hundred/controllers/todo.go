@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	model "hundred/models"
 	"hundred/models/manage"
 	"sso/user"
@@ -224,7 +225,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myAuMonad.Count = myAuMonad.Count + 1
 	myAuMonad.Edit()
 
-	// 是自己主单时
+	// 是主单
 	// 需要推荐人员数量限制
 	if myAuMonad.IsMain == 1 && myAuMonad.Task >= 2 {
 		isOk, _, _ := mainMonadTask(myAuMonad, spendersMonad)
@@ -237,9 +238,10 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	}
 	//
 	//
-	// 根据收入的金额 大于 当前单子对应金额 + 已经支出的金额，才能产生任务
-	// 大于1 级别的 monad
-	if !incomeGTspending(myRela, myAuMonad) {
+	// 收入大于 支出金额，才能产生任务
+	isOk := incomeGTspending(myRela, myAuMonad)
+	fmt.Println(isOk)
+	if isOk == false {
 		result["influence"] = false
 		rep.WriteJson(result)
 		return
@@ -257,6 +259,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	targetRelaAmin := new(manage.Relaadmin)
 	// 审核方单子不存在
 	if targetMonad == nil {
+		fmt.Println("+++++++ nil ++++++++")
 		// 设置收款人为运营组帐号
 		// 给运营组帐号添加待办
 		result["influence"] = true
@@ -266,17 +269,20 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson(result)
 		return
 	}
-	// 收款人信息
+	// 真正的收款人信息
 	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
-	// 收款方主单或子单，rela状态不正常
+	// 收款方主单或子单，rela状态不是正常
 	tarMainMoSata := targetMainMonad.State != 1 || targetMonad.State != 1 || targetRela.Status != 1
-	// 收款方主、子单级别小于付款方单子级别
+	// 收款方主或子单级别  小于 付款方单子级别
 	tarMainMoClass := (targetMainMonad.Class <= myAuMonad.Class) || (targetMonad.Class <= myAuMonad.Class)
-	// 是否符合要求人
+	// 是符合要求
 	if tarMainMoSata || tarMainMoClass {
+		// 由于以上两个条件不符合，真正的收款方需要增加损失
 		targetRela.Loss = targetRela.Loss + income
 		targetRela.UpdateByColsName("loss")
-		if targetRela.Referrer == "top" {
+
+		if strings.ToLower(targetRela.Referrer) == "top" {
+			fmt.Println("+++++++ top  ++++++++")
 			result["influence"] = true
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id)
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
@@ -284,6 +290,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 			rep.WriteJson(result)
 			return
 		} else {
+			fmt.Println("+++++++ top 00++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(0)
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
 			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
@@ -291,6 +298,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 			return
 		}
 	}
+	fmt.Println("+++++++ ok ++++++++")
 	result["influence"] = true
 	createAudit(myAuMonad, targetMonad, myRela, targetRela, 0, 2)
 	//
@@ -313,17 +321,23 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	rep.WriteJson("ok")
 }
 
-// income gt (>) Spending
-// and
-// monad class gt 1
+//收入 大于 总支出
 func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 
-	if monad.Class < 2 {
+	// 级别为1级，并且收过两次款
+	if monad.Class == 1 && monad.Count > 1 {
 		return true
 	}
 
+	// 预计支出金额
 	refSpending := INCOME[monad.Class+1]
+	// 总支出 = 实际已经支出 + 预计支出
 	spendingSum := rela.Spending + refSpending
+	// 总支出 = 加上待确认的支出
+	spendingSum += taskSum(rela)
+	fmt.Println(rela.Income)
+	fmt.Println(spendingSum)
+	// 收入 大于 总支出
 	if rela.Income > spendingSum {
 		return true
 	}
