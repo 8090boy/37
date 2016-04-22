@@ -222,8 +222,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 
 	// 收款单子增加一次收入
 	myAuMonad.Count = myAuMonad.Count + 1
-	// 收款单子增加一次任务
-	myAuMonad.Task = myAuMonad.Task + 1
 	myAuMonad.Edit()
 
 	// 是自己主单时
@@ -246,10 +244,12 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson(result)
 		return
 	}
-
+	// 收款单子增加一次任务
+	myAuMonad.Task = myAuMonad.Task + 1
+	myAuMonad.Edit()
 	//
 	// 获取提交者
-	targetLayer := myAuMonad.Count + 1
+	targetLayer := myAuMonad.Class + 1
 	consume := INCOME[targetLayer]
 	result["consume"] = consume
 	//
