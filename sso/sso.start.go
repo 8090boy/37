@@ -10,6 +10,7 @@ import (
 
 var conf *util.Config
 var wd, _ = os.Getwd()
+var hostAndPort string
 
 func init() {
 
@@ -24,6 +25,7 @@ func init() {
 	}
 	confPath := wd + util.GetSysSplit() + "sso" + util.GetSysSplit() + confFileName
 	conf = common.SetConfig(confPath)
+	hostAndPort = conf.Get("sysinfo", "port")
 	if conf.Get("sysinfo", "showSQL") == "true" {
 		util.InitDB(conf, true)
 	} else {
@@ -33,6 +35,7 @@ func init() {
 	if conf.Get("sysinfo", "initializedDatabase") == "true" {
 		common.InitUser()
 	}
+	fmt.Printf("sso: %v, %v\n", model, hostAndPort)
 }
 
 func main() {
@@ -47,8 +50,6 @@ func main() {
 	mux.HandleFunc("/byids", common.ByIds)
 	mux.HandleFunc("/byToken", common.ByToken)
 	mux.HandleFunc("/myinfo", common.Myinfo)
-	listenAndServe := conf.Get("sysinfo", "port")
-	fmt.Printf("%v SSO Start OK.\n", listenAndServe)
-	http.ListenAndServe(listenAndServe, mux)
+	http.ListenAndServe(hostAndPort, mux)
 
 }

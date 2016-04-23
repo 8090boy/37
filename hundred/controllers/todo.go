@@ -324,9 +324,19 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 //收入 大于 总支出
 func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 
+	if currentMondUnfinished(monad) {
+		return false
+	}
+
 	// 级别为1级，并且收过两次款
-	if monad.Class == 1 && monad.Count > 1 {
-		return true
+	if monad.Class == 1 {
+		mulStr := conf.Get("common", "mulriple")
+		mulriple, _ := strconv.Atoi(mulStr)
+		if monad.Count == mulriple {
+			return true
+		} else {
+			return false
+		}
 	}
 
 	// 预计支出金额
@@ -335,13 +345,21 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 	spendingSum := rela.Spending + refSpending
 	// 总支出 = 加上待确认的支出
 	spendingSum += taskSum(rela)
-	fmt.Println(rela.Income)
-	fmt.Println(spendingSum)
+
 	// 收入 大于 总支出
 	if rela.Income > spendingSum {
 		return true
 	}
 
+	return false
+}
+
+// 此单子有任务未完成
+func currentMondUnfinished(mon *model.Monad) bool {
+	aud := new(model.Audit).ByUpgargeMonad(mon.Id)
+	if aud.Id > 0 {
+		return true
+	}
 	return false
 }
 

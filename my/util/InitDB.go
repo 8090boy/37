@@ -13,12 +13,10 @@ var Eng *xorm.Engine
 
 func InitDB(conf *Config, show bool) {
 	Eng = new(xorm.Engine)
-
 	url := conf.Get("database", "url")
 	name := conf.Get("database", "name")
 	DBtype := conf.Get("database", "dbtype")
 	password := conf.Get("database", "password")
-	fmt.Println(url)
 	dbUrl := strings.Join([]string{strings.Join([]string{name, password}, ":"), url}, "@")
 	var err error
 	Eng, err = xorm.NewEngine(DBtype, dbUrl)

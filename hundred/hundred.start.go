@@ -13,6 +13,7 @@ import (
 
 var conf = new(util.Config)
 var wd, _ = os.Getwd()
+var hostAndPort string
 
 func init() {
 
@@ -30,9 +31,9 @@ func init() {
 	}
 	//	confPath := wd + util.GetSysSplit() + confFileName
 	confPath := wd + util.GetSysSplit() + "hundred" + util.GetSysSplit() + confFileName
-	fmt.Println(confPath)
-	conf = controller.SetConfig(confPath)
 
+	conf = controller.SetConfig(confPath)
+	hostAndPort = conf.Get("sysinfo", "port")
 	if conf.Get("common", "showSQL") == "true" {
 		util.InitDB(conf, true)
 	} else {
@@ -42,6 +43,7 @@ func init() {
 	if conf.Get("common", "initializedDatabase") == "true" {
 		controller.InitData()
 	}
+	fmt.Printf("hundred: %v, %v\n", model, hostAndPort)
 }
 func main() {
 	api := rest.NewApi()
@@ -56,7 +58,9 @@ func main() {
 				stat = true
 			case "http://www.3737.io":
 				stat = true
-			case "http://test.3737.io":
+			case "http://uat.3737.io":
+				stat = true
+			case "http://dev.3737.io":
 				stat = true
 			}
 			return stat
@@ -94,8 +98,7 @@ func main() {
 	http.HandleFunc("/login", controller.Login)   //login
 	http.HandleFunc("/signin", controller.Signin) //reg
 	http.Handle("/v1/", http.StripPrefix("/v1", api.MakeHandler()))
-	hostAndPort := conf.Get("sysinfo", "port")
-	fmt.Printf("Hundred start OK. = %v\n", hostAndPort)
+
 	http.ListenAndServe(hostAndPort, nil)
 
 }

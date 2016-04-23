@@ -13,6 +13,7 @@ import (
 
 var conf = new(util.Config)
 var wd, _ = os.Getwd()
+var hostAndPort string
 
 func init() {
 
@@ -30,9 +31,8 @@ func init() {
 	}
 	//	confPath := wd + util.GetSysSplit() + confFileName
 	confPath := wd + util.GetSysSplit() + "interaction" + util.GetSysSplit() + confFileName
-	fmt.Println(confPath)
 	conf = controller.SetConfig(confPath)
-
+	hostAndPort = conf.Get("sysinfo", "port")
 	if conf.Get("common", "showSQL") == "true" {
 		util.InitDB(conf, true)
 	} else {
@@ -42,6 +42,7 @@ func init() {
 	if conf.Get("common", "initializedDatabase") == "true" {
 		controller.InitData()
 	}
+	fmt.Printf("interaction: %v, %v\n", model, hostAndPort)
 }
 func main() {
 	api := rest.NewApi()
@@ -94,8 +95,6 @@ func main() {
 	http.HandleFunc("/login", controller.Login)   //login
 	http.HandleFunc("/signin", controller.Signin) //reg
 	http.Handle("/v1/", http.StripPrefix("/v1", api.MakeHandler()))
-	hostAndPort := conf.Get("sysinfo", "port")
-	fmt.Printf("Interaction start OK. = %v\n", hostAndPort)
 	http.ListenAndServe(hostAndPort, nil)
 
 }

@@ -128,6 +128,31 @@ func (e *Audit) All(startId, count int) ([]Audit, error) {
 	return datas, nil
 }
 
+// 根据升级单子的id
+func (e *Audit) ByUpgargeMonad(id int64) *Audit {
+	sql := "select * from audit where proposer_monad_id = ?"
+	resultsSlice, err := util.Eng.Query(sql, id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	datas := make([]*Audit, len(resultsSlice))
+	count := 0
+	if len(resultsSlice) == 0 {
+		return nil
+	}
+	for i, slice := range resultsSlice {
+
+		data := new(Audit)
+		data.compound(slice, data)
+
+		if data.Id >= 1 {
+			datas[i] = data
+			count++
+		}
+	}
+	return datas[0]
+}
+
 // 根据接受者sso id
 func (e *Audit) BySso(id int64, stat, special int) ([]*Audit, int) {
 	sql := "select * from audit where sso = ? and status =? and special=?"

@@ -2,6 +2,7 @@
 ::ÃüÁîÌáÊ¾
 echo "go run sso,hundred,interaction !"
 ::Æô¶¯
+::E:\nginx-1.8.0\nginx.exe
 start /b go run sso/sso.start.go
 start /b go run interaction/interaction.start.go
 go run hundred/hundred.start.go
