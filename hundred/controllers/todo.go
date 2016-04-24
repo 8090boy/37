@@ -332,7 +332,7 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 	if monad.Class == 1 {
 		mulStr := conf.Get("common", "mulriple")
 		mulriple, _ := strconv.Atoi(mulStr)
-		if monad.Count == mulriple {
+		if monad.Count == (mulriple - 1) {
 			return true
 		} else {
 			return false
