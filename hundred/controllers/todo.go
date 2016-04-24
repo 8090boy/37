@@ -240,7 +240,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	//
 	// 收入大于 支出金额，才能产生任务
 	isOk := incomeGTspending(myRela, myAuMonad)
-	fmt.Println(isOk)
+
 	if isOk == false {
 		result["influence"] = false
 		rep.WriteJson(result)
@@ -265,7 +265,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		result["influence"] = true
 		targetRelaAmin = targetRelaAmin.FindByRelaId(0)
 		result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
-		createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
+		createAuditForNewMonad(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
 		rep.WriteJson(result)
 		return
 	}
@@ -287,6 +287,8 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id)
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
 			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
+			//createAuditForNewMonad(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
+
 			rep.WriteJson(result)
 			return
 		} else {
@@ -332,7 +334,7 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 	if monad.Class == 1 {
 		mulStr := conf.Get("common", "mulriple")
 		mulriple, _ := strconv.Atoi(mulStr)
-		if monad.Count == (mulriple - 1) {
+		if monad.Count == mulriple {
 			return true
 		} else {
 			return false
@@ -357,6 +359,9 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 // 此单子有任务未完成
 func currentMondUnfinished(mon *model.Monad) bool {
 	aud := new(model.Audit).ByUpgargeMonad(mon.Id)
+	if aud == nil {
+		return false
+	}
 	if aud.Id > 0 {
 		return true
 	}
@@ -473,7 +478,7 @@ func createAudit(proposerMonad, targetMonad *model.Monad, proposerRela, targetRe
 	newAudit.Create = time.Now().Local()
 	newAudit.Operation = newAudit.Create
 	// 提交者、发起者A za
-	newAudit.ProposerCount = proposerMonad.Count
+	newAudit.ProposerCount = proposerMonad.Class
 	newAudit.ProposerMonadId = proposerMonad.Id
 	newAudit.ProposerRelationalId = proposerMonad.Pertain
 	newAudit.ProposerSso = proposerRela.SsoId
@@ -483,7 +488,7 @@ func createAudit(proposerMonad, targetMonad *model.Monad, proposerRela, targetRe
 		newAudit.Sso = specialUserId
 	} else {
 		newAudit.Special = 0
-		newAudit.Count = targetMonad.Count
+		newAudit.Count = targetMonad.Class
 		newAudit.MonadId = targetMonad.Id
 		newAudit.RelationalId = targetMonad.Pertain
 		newAudit.Sso = targetRela.SsoId
@@ -491,7 +496,7 @@ func createAudit(proposerMonad, targetMonad *model.Monad, proposerRela, targetRe
 	newAudit.Add()
 }
 
-// proposer 待办或任务提交者
+// proposer 任务提交者
 // target 待办或任务审核者
 // 2任务,1已审核待办，0未审核待办
 // 创建普通的待办和自己的任务
@@ -505,7 +510,7 @@ func createAuditForNewMonad(proposerMonad, targetMonad *model.Monad,
 	newAudit.Create = time.Now().Local()
 	newAudit.Operation = newAudit.Create
 	// 提交者、发起者
-	newAudit.ProposerCount = proposerMonad.Count
+	newAudit.ProposerCount = proposerMonad.Class
 	newAudit.ProposerMonadId = proposerMonad.Id
 	newAudit.ProposerRelationalId = proposerMonad.Pertain
 	newAudit.ProposerSso = proposerRela.SsoId
@@ -515,7 +520,7 @@ func createAuditForNewMonad(proposerMonad, targetMonad *model.Monad,
 		newAudit.Sso = specialUserId
 	} else {
 		newAudit.Special = 0
-		newAudit.Count = targetMonad.Count
+		newAudit.Count = targetMonad.Class
 		newAudit.MonadId = targetMonad.Id
 		newAudit.RelationalId = targetMonad.Pertain
 		newAudit.Sso = targetRela.SsoId
