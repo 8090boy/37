@@ -271,10 +271,10 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	}
 	// 真正的收款人信息
 	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
-	// 收款方主单或子单，rela状态不是正常
+	// 收款方主单或子单，rela状态不正常
 	tarMainMoSata := targetMainMonad.State != 1 || targetMonad.State != 1 || targetRela.Status != 1
 	// 收款方主或子单级别  小于 付款方单子级别
-	tarMainMoClass := (targetMainMonad.Class <= myAuMonad.Class) || (targetMonad.Class <= myAuMonad.Class)
+	tarMainMoClass := (targetMainMonad.Class < myAuMonad.Class) || (targetMonad.Class < myAuMonad.Class)
 	// 是符合要求
 	if tarMainMoSata || tarMainMoClass {
 		// 由于以上两个条件不符合，真正的收款方需要增加损失
