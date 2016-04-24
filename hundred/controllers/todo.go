@@ -332,9 +332,9 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 
 	// 级别为1级，并且收过两次款
 	if monad.Class == 1 {
-		mulStr := conf.Get("common", "mulriple")
-		mulriple, _ := strconv.Atoi(mulStr)
-		if monad.Count == mulriple {
+		//mulStr := conf.Get("common", "mulriple")
+		//mulriple, _ := strconv.Atoi(mulStr)
+		if monad.Count == 1 {
 			return true
 		} else {
 			return false
