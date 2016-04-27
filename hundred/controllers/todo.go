@@ -255,8 +255,10 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	consume := INCOME[targetLayer]
 	result["consume"] = consume
 	//
-	targetMonad := findParentMonad(myAuMonad, targetLayer-1)
+	targetMonad := findParentMonad(myAuMonad, targetLayer)
 	targetRelaAmin := new(manage.Relaadmin)
+
+	fmt.Printf("targetMonad=\n%v\n", targetMonad)
 	// 审核方单子不存在
 	if targetMonad == nil {
 		fmt.Println("+++++++ nil ++++++++")
@@ -271,6 +273,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	}
 	// 真正的收款人信息
 	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
+	fmt.Printf("targetMainMonad=\n%v\n", targetMainMonad)
 	// 收款方主单或子单，rela状态不正常
 	tarMainMoSata := targetMainMonad.State != 1 || targetMonad.State != 1 || targetRela.Status != 1
 	// 收款方主或子单级别  小于 付款方单子级别
@@ -287,8 +290,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
 			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
-			//createAuditForNewMonad(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
-
 			rep.WriteJson(result)
 			return
 		} else {
