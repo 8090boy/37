@@ -255,7 +255,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	consume := INCOME[targetLayer]
 	result["consume"] = consume
 	//
-	targetMonad := findParentMonad(myAuMonad, targetLayer)
+	targetMonad := findParentMonad(myAuMonad, targetLayer-1)
 	targetRelaAmin := new(manage.Relaadmin)
 	// 审核方单子不存在
 	if targetMonad == nil {
@@ -284,7 +284,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		if strings.ToLower(targetRela.Referrer) == "top" {
 			fmt.Println("+++++++ top  ++++++++")
 			result["influence"] = true
-			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id)
+			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
 			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
 			//createAuditForNewMonad(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
@@ -293,7 +293,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 			return
 		} else {
 			fmt.Println("+++++++ top 00++++++++")
-			targetRelaAmin = targetRelaAmin.FindByRelaId(0)
+			targetRelaAmin = targetRelaAmin.FindByRelaId(0) // 不是股东就特定给0好id的管理者
 			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
 			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
 			rep.WriteJson(result)

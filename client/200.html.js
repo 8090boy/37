@@ -27,8 +27,9 @@ var main = {
         if(todoAddRed){
             todoAddRed.style.display='none'
         }
-        jQuery.get(url, null)
-        
+	hundredData.src = url
+      //  jQuery.get(url, null)
+
     }
     , my37: function (obj) {
         if (obj.s == 2) return location.href = '6.html'
@@ -63,7 +64,7 @@ var main = {
         if (!this.r) return this.noHaveRela()
         if (!this.r.CurrentMonad) return this.noState()
         if (!this.m) return this.noState()
-        if (!this.m.State) return this.waitAccpcet()        
+        if (!this.m.State) return this.waitAccpcet()
         //有主单且正常
         this.MonadNormal()
     }
@@ -78,7 +79,7 @@ var main = {
                  document.querySelector('.todo').className = 'todo addRedpackage'
             }
         }
-        
+
         //    this.showCreateMonadInfo() // show monad
         this.Audit.UpdateTask() // show task
         return
@@ -92,7 +93,7 @@ var main = {
             obj.time_hour = document.getElementById("times_hour")
             obj.time_minute = document.getElementById("times_minute")
             obj.time_second = document.getElementById("second")
-            var reftime = new Date(Date.parse(tmp.replace(/-/g, "/"))) // 设定活动结束结束时间     
+            var reftime = new Date(Date.parse(tmp.replace(/-/g, "/"))) // 设定活动结束结束时间
             obj.time_end = reftime.getTime()
             count_down(obj)
         } else {
@@ -153,7 +154,7 @@ var main = {
         var url = '/api/200/v1/task/new'
         ajax.GET(url, this._addMonadPost.bind(this))
     }
-    , _addMonadPost: function (msg) { 
+    , _addMonadPost: function (msg) {
         //s20//h小时//d天
         if (msg.ok) {
             cookie.Set(my37.r.Mobile + "today", true, this.interval)
@@ -328,7 +329,7 @@ var main = {
             htm.push('</div>')
             var con = htm.join('')
             var needSubmitTaskslist = tit + con
-            // 待对方确认中         
+            // 待对方确认中
             var htm2 = []
             for (var k = 0; k < my37.tasks.length; k++) {
                 var mt = my37.tasks[k]
@@ -537,7 +538,7 @@ var main = {
 
 
     }
-     
+
 //
 //
 //
