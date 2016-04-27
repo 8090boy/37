@@ -250,7 +250,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myAuMonad.Task = myAuMonad.Task + 1
 	myAuMonad.Edit()
 	//
-	// 获取提交者
+	// 审核单子层数是：收款单子class加1层
 	targetLayer := myAuMonad.Class + 1
 	consume := INCOME[targetLayer]
 	result["consume"] = consume

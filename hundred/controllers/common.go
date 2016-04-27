@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	model "hundred/models"
 	manage "hundred/models/manage"
 	"math"
@@ -210,21 +211,27 @@ func findMonadByMyauditsInMyMonadsAndClassIsZero(myAudits []*model.Audit, myMona
 
 // 循环查找上几层单子
 func findParentMonad(monad *model.Monad, layer int) *model.Monad {
+	fmt.Printf("to layer : %v and monad.id : %v ", monad.Id, layer)
 	targetMonad := new(model.Monad)
 	targetMonad = monad
+	if monad == nil {
+		fmt.Println("findParentMonad - 0")
+		return nil
+	}
 	if monad.ParentMonad == 0 {
+		fmt.Println("findParentMonad - 1")
 		return nil
 	}
 	for k := 1; k <= layer; k++ {
 		tmpMon := targetMonad.ById(targetMonad.ParentMonad)
 		if tmpMon == nil {
+			fmt.Println("findParentMonad - 2")
 			return nil
 		}
-		if tmpMon.ParentMonad == 0 {
-			return nil
-		}
+
 		targetMonad = tmpMon
 	}
+	fmt.Println("findParentMonad - 4")
 	return targetMonad
 }
 
