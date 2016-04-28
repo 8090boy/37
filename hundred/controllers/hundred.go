@@ -204,8 +204,14 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 
 // 根据relational升级单子
 func moandUpgrade(monad *model.Monad) bool {
-	rela := new(model.Relational).ById(monad.Pertain)
+	if monad == nil {
+		return false
+	}
 
+	rela := new(model.Relational).ById(monad.Pertain)
+	if rela.Income == 0 {
+		return false
+	}
 	if monad.IsMain == 1 && monad.Task > 1 {
 		// 需要推荐人员数量限制
 		isOk, _, _ := mainMonadTask(monad)
