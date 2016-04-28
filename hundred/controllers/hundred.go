@@ -207,17 +207,24 @@ func moandUpgrade(monad *model.Monad) bool {
 	if monad == nil {
 		return false
 	}
-
-	rela := new(model.Relational).ById(monad.Pertain)
-	if rela.Income == 0 {
+	if monad.Id == 0 {
 		return false
 	}
+
 	if monad.IsMain == 1 && monad.Task > 1 {
 		// 需要推荐人员数量限制
 		isOk, _, _ := mainMonadTask(monad)
 		if !isOk { // 推荐人数不够
 			return false
 		}
+	}
+
+	rela := new(model.Relational).ById(monad.Pertain)
+	if rela == nil {
+		return false
+	}
+	if rela.Income == 0 || rela.Spending == 0 || rela.Status != 1 {
+		return false
 	}
 
 	// 收入大于 支出金额，才能产生任务

@@ -61,7 +61,7 @@ gopath="/usr/local/gopath"
 nginxdir="/usr/local/nginx"
 clearStart
 #stop
-killall *.statrt
+killall *.start
 buildItem ${gopath}
 starting
 nginxreload ${nginxdir}
@@ -73,7 +73,7 @@ nginxdir="/usr/local/nginx"
 backup
 clearStart
 #stop
-killall *.statrt
+killall *.start
 buildItem ${gopath}
 starting
 nginxreload ${nginxdir}
