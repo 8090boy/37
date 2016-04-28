@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	model "hundred/models"
 	"hundred/models/manage"
 	"sso/user"
@@ -225,106 +224,22 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myAuMonad.Count = myAuMonad.Count + 1
 	myAuMonad.Edit()
 
-	// 是主单
-	// 需要推荐人员数量限制
-	if myAuMonad.IsMain == 1 && myAuMonad.Task >= 2 {
-		isOk, _, _ := mainMonadTask(myAuMonad, spendersMonad)
-		// 主单不符合要求不产生任务。
-		if !isOk {
-			result["influence"] = false
-			rep.WriteJson(result)
-			return
-		}
-	}
-	//
-	//
-	// 收入大于 支出金额，才能产生任务
-	isOk := incomeGTspending(myRela, myAuMonad)
-
-	if isOk == false {
+	isOk := moandUpgrade(myAuMonad)
+	if isOk {
+		result["influence"] = true
+		rep.WriteJson(result)
+		return
+	} else {
 		result["influence"] = false
 		rep.WriteJson(result)
 		return
 	}
-	// 收款单子增加一次任务
-	myAuMonad.Task = myAuMonad.Task + 1
-	myAuMonad.Edit()
-	//
-	// 审核单子层数是：收款单子class加1层
-	targetLayer := myAuMonad.Class + 1
-	consume := INCOME[targetLayer]
-	result["consume"] = consume
-	//
-	targetMonad := findParentMonad(myAuMonad, targetLayer)
-	targetRelaAmin := new(manage.Relaadmin)
 
-	fmt.Printf("targetMonad=\n%v\n", targetMonad)
-	// 审核方单子不存在
-	if targetMonad == nil {
-		fmt.Println("+++++++ nil ++++++++")
-		// 设置收款人为运营组帐号
-		// 给运营组帐号添加待办
-		result["influence"] = true
-		targetRelaAmin = targetRelaAmin.FindByRelaId(0)
-		result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
-		createAuditForNewMonad(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
-		rep.WriteJson(result)
-		return
-	}
-	// 真正的收款人信息
-	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
-	fmt.Printf("targetMainMonad=\n%v\n", targetMainMonad)
-	// 收款方主单或子单，rela状态不正常
-	tarMainMoSata := targetMainMonad.State != 1 || targetMonad.State != 1 || targetRela.Status != 1
-	// 收款方主或子单级别  小于 付款方单子级别
-	tarMainMoClass := (targetMainMonad.Class < myAuMonad.Class) || (targetMonad.Class < myAuMonad.Class)
-	// 是符合要求
-	if tarMainMoSata || tarMainMoClass {
-		// 由于以上两个条件不符合，真正的收款方需要增加损失
-		targetRela.Loss = targetRela.Loss + income
-		targetRela.UpdateByColsName("loss")
-
-		if strings.ToLower(targetRela.Referrer) == "top" {
-			fmt.Println("+++++++ top  ++++++++")
-			result["influence"] = true
-			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
-			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
-			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
-			rep.WriteJson(result)
-			return
-		} else {
-			fmt.Println("+++++++ top 00++++++++")
-			targetRelaAmin = targetRelaAmin.FindByRelaId(0) // 不是股东就特定给0好id的管理者
-			result["pi"] = resultAssignUserInfo(targetRelaAmin.Ssoid)
-			createAudit(myAuMonad, nil, myRela, nil, targetRelaAmin.Ssoid, 2)
-			rep.WriteJson(result)
-			return
-		}
-	}
-	fmt.Println("+++++++ ok ++++++++")
-	result["influence"] = true
-	createAudit(myAuMonad, targetMonad, myRela, targetRela, 0, 2)
-	//
-	//
-	//
-	if targetRela.Referrer == "top" {
-		result["pri"] = findManageUserInfoByTopRelaId(targetRela.Id)
-		rep.WriteJson(result)
-		return
-	}
-	tmpId, _ := strconv.ParseInt(targetRela.Referrer, 10, 64)
-	refUser, _, _ := findURM(tmpId)
-	if refUser == nil {
-		relaAdmin := new(manage.Relaadmin)
-		relaAdmin.FindByRelaId(targetRela.Id)
-		result["pri"] = resultAssignUserInfo(relaAdmin.Ssoid)
-		rep.WriteJson(result)
-		return
-	}
-	rep.WriteJson("ok")
 }
 
 //收入 大于 总支出
+// monad 当前收款单子
+// 当前rela用户
 func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 
 	if currentMondUnfinished(monad) {
@@ -333,8 +248,6 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 
 	// 级别为1级，并且收过两次款
 	if monad.Class == 1 {
-		//mulStr := conf.Get("common", "mulriple")
-		//mulriple, _ := strconv.Atoi(mulStr)
 		if monad.Count == 1 {
 			return true
 		} else {
@@ -350,7 +263,7 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 	spendingSum += taskSum(rela)
 
 	// 收入 大于 总支出
-	if rela.Income > spendingSum {
+	if rela.Income >= spendingSum {
 		return true
 	}
 

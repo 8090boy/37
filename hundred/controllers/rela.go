@@ -5,7 +5,7 @@ import (
 )
 
 // 关系户推荐的人员数量级下层人员推荐总和
-func findRecommandInfo(relaid int64, refMon *model.Monad) (firstCount, secondCount int) {
+func findRecommandInfo(relaid int64) (firstCount, secondCount int) {
 	tmpRala := &model.Relational{}
 	relas := tmpRala.FindByReferrer(relaid)
 	firstCount = 0
@@ -17,7 +17,7 @@ func findRecommandInfo(relaid int64, refMon *model.Monad) (firstCount, secondCou
 		if relaA == nil {
 			continue
 		}
-		if mainMonadIsCommon(relaA, refMon) {
+		if mainMonadIsCommon(relaA, nil) {
 			firstCount++
 		}
 		refRefRelas, no := tmpRala.FindRecommended(relaA.Id)
@@ -26,7 +26,7 @@ func findRecommandInfo(relaid int64, refMon *model.Monad) (firstCount, secondCou
 		}
 
 		for _, rela := range refRefRelas {
-			if mainMonadIsCommon(rela, refMon) {
+			if mainMonadIsCommon(rela, nil) {
 				secondCount++
 			}
 		}

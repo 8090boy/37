@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"sso/user"
+	"strings"
 	"sync"
 
 	model "hundred/models"
@@ -138,7 +140,6 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	}
 	// 有收入的会员都要产生单子
 	if relational.Income > 0 {
-
 		if relational.Income > taskSum(relational) {
 			// 正常状态时需要自动出单
 			if relational.Status == RELA_STATUS_NORMAL {
@@ -150,11 +151,12 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	if myMainmonad.Id > 0 {
 		sweet["m"] = *myMainmonad
 	}
-	//my audits
-	var audit model.Audit
+
 	//
 	// 出单信息
 	//
+	//my audits
+	var audit model.Audit
 	// 自己的单子未被别人审核状况
 	myAudits, myCount := audit.ByPropRela(relational.Id, 0, 0)
 	// 自己单子级别为0
@@ -183,6 +185,8 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	// 升级主单
+	moandUpgrade(myMainmonad)
 	// 我的任务
 	myTask, count := new(model.Audit).AuditsByPropRela(relational.Id)
 	if count > 0 {
@@ -196,6 +200,72 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	sweet["state"] = 100
 	all_info, _ := json.Marshal(sweet)
 	util.WriteJSONP(res, callback+"("+string(all_info)+")")
+}
+
+// 根据relational升级单子
+func moandUpgrade(monad *model.Monad) bool {
+	rela := new(model.Relational).ById(monad.Pertain)
+
+	if monad.IsMain == 1 && monad.Task > 1 {
+		// 需要推荐人员数量限制
+		isOk, _, _ := mainMonadTask(monad)
+		if !isOk { // 推荐人数不够
+			return false
+		}
+	}
+
+	// 收入大于 支出金额，才能产生任务
+	isOk := incomeGTspending(rela, monad)
+	if !isOk {
+		return false
+	}
+
+	//升级到
+	targetLayer := monad.Class + 1
+	// 付出金额 pay out
+	income := INCOME[targetLayer]
+	// 出一次单增加一次任务
+	monad.Task = monad.Task + 1
+	monad.Edit()
+
+	targetMonad := findParentMonad(monad, targetLayer)
+	targetRelaAmin := new(manage.Relaadmin)
+
+	// 审核方单子不存在
+	if targetMonad == nil {
+		fmt.Println("+++++++mainUpgrade  nil ++++++++")
+		// 设置收款人为运营组帐号
+		// 给运营组帐号添加待办
+		targetRelaAmin = targetRelaAmin.FindByRelaId(0)
+		createAuditForNewMonad(monad, nil, rela, nil, targetRelaAmin.Ssoid, 2)
+		return true
+	}
+	// 真正的收款人信息
+	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
+	// 收款方主单或子单，rela状态不正常
+	tarMainMoSata := targetMainMonad.State != 1 || targetMonad.State != 1 || targetRela.Status != 1
+	// 收款方主或子单级别  小于 付款方单子级别
+	tarMainMoClass := (targetMainMonad.Class < monad.Class) || (targetMonad.Class < monad.Class)
+	// 是符合要求
+	if tarMainMoSata || tarMainMoClass {
+		// 由于以上两个条件不符合，真正的收款方需要增加损失
+		targetRela.Loss = targetRela.Loss + income
+		targetRela.UpdateByColsName("loss")
+		if strings.ToLower(targetRela.Referrer) == "top" {
+			fmt.Println("+++++++mainUpgrade  top  ++++++++")
+			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
+			createAudit(monad, nil, rela, nil, targetRelaAmin.Ssoid, 2)
+			return true
+		} else {
+			fmt.Println("+++++++mainUpgrade top 00++++++++")
+			targetRelaAmin = targetRelaAmin.FindByRelaId(0) // 不是股东就特定给0好id的管理者
+			createAudit(monad, nil, rela, nil, targetRelaAmin.Ssoid, 2)
+			return true
+		}
+	}
+	fmt.Println("+++++++mainUpgrade ok ++++++++")
+	createAudit(monad, targetMonad, rela, targetRela, 0, 2)
+	return true
 }
 
 // 可以出单吗

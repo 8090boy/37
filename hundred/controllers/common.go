@@ -211,7 +211,7 @@ func findMonadByMyauditsInMyMonadsAndClassIsZero(myAudits []*model.Audit, myMona
 
 // 循环查找上几层单子
 func findParentMonad(monad *model.Monad, layer int) *model.Monad {
-	fmt.Printf("to layer : %v and monad.id : %v ", monad.Id, layer)
+	fmt.Printf("to layer : %v and monad.id : %v ", layer, monad.Id)
 	targetMonad := new(model.Monad)
 	targetMonad = monad
 	if monad == nil {
@@ -539,24 +539,27 @@ func findMonadByMessageId(mesId string) (*model.Monad, *model.Relational, *model
 }
 
 // 主单需要限制升级
-func mainMonadTask(myAuMonad *model.Monad, refMon *model.Monad) (isOk bool, fCount, sCount int) {
-	isOk = false
-	fCount, sCount = findRecommandInfo(myAuMonad.Pertain, refMon)
 
-	switch myAuMonad.Task + 1 {
-	case 3:
+func mainMonadTask(mainMonad *model.Monad) (isOk bool, fCount, sCount int) {
+	pertainId := mainMonad.Pertain
+	isOk = false
+	fCount, sCount = findRecommandInfo(pertainId)
+	// 下一层就是直推的
+	// 下二层就是间接推荐的
+	switch mainMonad.Task + 1 {
+	case 3: // 升3级：下一层至少有一人
 		if fCount > 0 {
 			isOk = true
 		}
-	case 4:
+	case 4: // 升4级：下一、二层总数至少3个人
 		if (fCount + sCount) > 2 {
 			isOk = true
 		}
-	case 5:
+	case 5: // 升5级：下一、二层总数至少5个人
 		if (fCount + sCount) > 4 {
 			isOk = true
 		}
-	case 6:
+	case 6: // 升5级：下一、二层总数至少7个人，并且下一层至少2个，下二层至少2个
 		if ((fCount + sCount) > 6) && (fCount > 1) && (sCount > 1) {
 			isOk = true
 		}
