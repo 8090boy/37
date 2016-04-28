@@ -60,8 +60,7 @@ local_env(){
 gopath="/usr/local/gopath"
 nginxdir="/usr/local/nginx"
 clearStart
-#stop
-killall *.start
+stop
 buildItem ${gopath}
 starting
 nginxreload ${nginxdir}
@@ -72,8 +71,8 @@ gopath="/root/web"
 nginxdir="/usr/local/nginx"
 backup
 clearStart
-#stop
-killall *.start
+stop
+#killall *.start
 buildItem ${gopath}
 starting
 nginxreload ${nginxdir}
