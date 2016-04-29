@@ -223,7 +223,7 @@ func moandUpgrade(monad *model.Monad) bool {
 	if rela == nil {
 		return false
 	}
-	if rela.Income == 0 || rela.Spending == 0 || rela.Status != 1 {
+	if rela.Income == 0 || rela.Status != 1 {
 		return false
 	}
 
@@ -250,7 +250,7 @@ func moandUpgrade(monad *model.Monad) bool {
 		// 设置收款人为运营组帐号
 		// 给运营组帐号添加待办
 		targetRelaAmin = targetRelaAmin.FindByRelaId(0)
-		createAuditForNewMonad(monad, nil, rela, nil, targetRelaAmin.Ssoid, 2)
+		createAuditForNewMonad(monad, nil, rela, nil, targetRelaAmin.Ssoid, 0)
 		return true
 	}
 	// 真正的收款人信息
@@ -307,11 +307,9 @@ func accpetCreate(myRelational *model.Relational) bool {
 // 出单了就返回 true,没有出单返回 false
 func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
 	sta := accpetCreate(myRelational)
-
 	if !sta {
 		return false
 	}
-
 	// 出单
 	myMonad := model.NewMonad()
 	myMonad.Pertain = myRelational.Id
@@ -322,12 +320,11 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 	if !flag {
 		return false
 	}
-
 	// 因为对方上级单子处于冻结状态
 	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
 	if parentRela.Referrer == "top" {
 		// add audit
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 2)
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
 		return true
 	}
 	state := false
@@ -344,9 +341,9 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 		// 指定帐号
 		specialUserId := int64(3)
 		// add audit
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 2)
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 0)
 	} else {
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 2)
+		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
 	}
 	return true
 }

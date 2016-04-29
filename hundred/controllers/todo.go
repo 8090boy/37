@@ -191,7 +191,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		}
 	}
 	// 对方单子小于7级时加1级
-	if spendersMonad.Class <= 6 {
+	if spendersMonad.Class < 7 {
 		spendersMonad.Class = spendersMonad.Class + 1
 	}
 	if spendersMonad.IsMain == 0 {
@@ -214,7 +214,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myAuMonad := new(model.Monad)
 	myAuMonad = myAuMonad.ById(audit.MonadId)
 	// 任何单子级别大于6将不产生任务
-	if myAuMonad.Class > 6 {
+	if myAuMonad.Class == 7 {
 		result["influence"] = false
 		rep.WriteJson(result)
 		return
