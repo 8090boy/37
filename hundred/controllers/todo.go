@@ -237,39 +237,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 
 }
 
-//收入 大于 总支出
-// monad 当前收款单子
-// 当前rela用户
-func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
-
-	if currentMondUnfinished(monad) {
-		return false
-	}
-
-	// 级别为1级，并且收过两次款
-	if monad.Class == 1 {
-		if monad.Count == 1 {
-			return true
-		} else {
-			return false
-		}
-	}
-
-	// 预计支出金额
-	refSpending := INCOME[monad.Class+1]
-	// 总支出 = 实际已经支出 + 预计支出
-	spendingSum := rela.Spending + refSpending
-	// 总支出 = 加上待确认的支出
-	spendingSum += taskSum(rela)
-
-	// 收入 大于 总支出
-	if rela.Income >= spendingSum {
-		return true
-	}
-
-	return false
-}
-
 // 此单子有任务未完成
 func currentMondUnfinished(mon *model.Monad) bool {
 	aud := new(model.Audit).ByUpgargeMonad(mon.Id)

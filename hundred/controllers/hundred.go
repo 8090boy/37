@@ -220,16 +220,9 @@ func moandUpgrade(monad *model.Monad) bool {
 	}
 
 	rela := new(model.Relational).ById(monad.Pertain)
-	if rela == nil {
-		return false
-	}
-	if rela.Income == 0 || rela.Status != 1 {
-		return false
-	}
 
 	// 收入大于 支出金额，才能产生任务
-	isOk := incomeGTspending(rela, monad)
-	if !isOk {
+	if !incomeGTspending(rela, monad) {
 		return false
 	}
 
@@ -279,6 +272,62 @@ func moandUpgrade(monad *model.Monad) bool {
 	fmt.Println("+++++++mainUpgrade ok ++++++++")
 	createAudit(monad, targetMonad, rela, targetRela, 0, 2)
 	return true
+}
+
+//收入 大于 总支出
+// monad 当前收款单子
+func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
+
+	if rela == nil {
+		return false
+	}
+
+	if rela.Income == 0 {
+		return false
+	}
+
+	if rela.Status != 1 {
+		return false
+	}
+
+	if rela.CurrentMonad == 0 {
+		return false
+	}
+
+	if currentMondUnfinished(monad) {
+		return false
+	}
+
+	// 级别为1级，并且收过两次款
+	if monad.Class == 1 {
+		if monad.Count == 1 {
+			return true
+		} else {
+			return false
+		}
+	}
+
+	// 收入大于支出3倍
+	isOk2 := rela.Income >= (rela.Spending * 3)
+
+	if isOk2 {
+		return true
+	}
+
+	// 预计支出金额
+	refSpending := INCOME[monad.Class+1]
+	// 总支出 = 实际已经支出 + 预计支出
+	spendingSum := rela.Spending + refSpending
+	// 总支出 = 加上待确认的支出
+	spendingSum = spendingSum + taskSum(rela)
+	// 总收入大于总支出
+	isOk1 := rela.Income >= spendingSum
+
+	if isOk1 {
+		return true
+	}
+
+	return false
 }
 
 // 可以出单吗
