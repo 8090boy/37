@@ -224,8 +224,7 @@ func findTaskForRelaId(relaid int64) (firstT, secondT, threeT []*model.Audit) {
 
 }
 
-// 根据未被对方审核的(自己)所有单子和
-//自己所有单子查找级别为0的审核记录
+// 未被对方审核的自己的所有单子中0级别的审核记录
 func findMonadByMyauditsInMyMonadsAndClassIsZero(myAudits []*model.Audit, myMonads []*model.Monad) *model.Audit {
 	if len(myAudits) == 0 || len(myMonads) == 0 {
 		return nil

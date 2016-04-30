@@ -174,7 +174,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		tmpUser, tmpRela, _ := findURM(tmpAu.RelationalId)
 		sweet["pi"] = resultAuditerInfo(tmpRela, tmpUser) // 返回对方的信息
 		// 对方推荐人信息
-		if tmpRela.Referrer == "top" { //股东
+		if strings.ToLower(tmpRela.Referrer) == "top" { //股东
 			sweet["pri"] = findSpecificReferrer(tmpRela.Id)
 		} else {
 			tmpRelaId, _ := strconv.ParseInt(tmpRela.Referrer, 10, 64)
@@ -323,7 +323,7 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 	return false
 }
 
-// 可以出单吗
+// 时间限制出单
 func spaceOfTime(myRelational *model.Relational) bool {
 
 	conf = GetConfig()

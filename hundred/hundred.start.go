@@ -65,10 +65,8 @@ func main() {
 			}
 			return stat
 		},
-		AllowedMethods: []string{
-			"GET", "POST"},
-		AllowedHeaders: []string{
-			"Accept", "Content-Type", "X-Custom-Header", "Origin"},
+		AllowedMethods:                []string{"GET", "POST"},
+		AllowedHeaders:                []string{"Accept", "Content-Type", "X-Custom-Header", "Origin"},
 		AccessControlAllowCredentials: true,
 		AccessControlMaxAge:           3600,
 	})

@@ -22,7 +22,7 @@ function start() {
     
     if (recomI) {
         if (/^[\d|\w]{6,10}$/i.test(recomI)) {
-            surface.on("in")
+            surface.on("regpage")
             document.querySelector('input[name="referrerId"]').value = recomI
             addListener(innreg,'click',inn.reg.bind(inn,37))
         }
@@ -31,7 +31,7 @@ function start() {
     
      if (recomH) {
         if (/^[\d|\w]{6,10}$/i.test(recomH)) {
-            surface.on("in")
+            surface.on("regpage")
             document.querySelector('input[name="referrerId"]').value = recomH
             addListener(innreg,'click',inn.reg.bind(inn,200))
         }
