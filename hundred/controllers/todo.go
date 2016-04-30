@@ -147,20 +147,10 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	if spendersRela.OneCount == RELA_STATUS_UNBORN {
 		spendersRela.Status = 1
 	}
-	// 第一次收款需要更新自己出单时间，防止任务收款后就冻结了
-	// -- 因为自动出单，不需要这里更新出单时间
-	//	if audit.Isnewmonad == 1 {
-	//		spendersRela.PrevNewMonad = time.Now().Local()
-	//	}
-	spendersRela.Spending = spendersRela.Spending + income
-	//	switch income {
-	//	case 100:
-	//		spendersRela.OneCount = spendersRela.OneCount + 1
-	//	case 200:
-	//		spendersRela.TwoCount = spendersRela.TwoCount + 1
-	//	case 300:
-	//		spendersRela.ThreeCount = spendersRela.ThreeCount + 1
-	//	}
+	// 是主单不需要增加别人的支出
+	if spendersMonad.IsMain == 0 {
+		spendersRela.Spending = spendersRela.Spending + income
+	}
 
 	// 别人的主单，关系户状态
 	if spenderMainMonad != nil {
@@ -179,7 +169,6 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 				if isOk { // 解冻期之内
 					spenderMainMonad.State = RELA_STATUS_NORMAL
 					spendersRela.Status = RELA_STATUS_NORMAL
-
 				}
 			}
 		}
@@ -346,65 +335,4 @@ func changeProposerInfo(au *model.Audit) string {
 		resultStr += tmpRela.Freetime
 	}
 	return resultStr
-}
-
-// proposer 待办或任务提交者
-// target 待办或任务审核者
-// 2任务,1已审核待办，0未审核待办
-// 创建普通的待办和自己的任务
-// specialUserId 特殊审核人 sso id
-func createAudit(proposerMonad, targetMonad *model.Monad, proposerRela, targetRela *model.Relational, specialUserId int64, stat int) {
-	newAudit := new(model.Audit)
-	newAudit.Status = stat //1已审核待办,0未审核待办；2任务；
-	newAudit.Create = time.Now().Local()
-	newAudit.Operation = newAudit.Create
-	// 提交者、发起者A za
-	newAudit.ProposerCount = proposerMonad.Class
-	newAudit.ProposerMonadId = proposerMonad.Id
-	newAudit.ProposerRelationalId = proposerMonad.Pertain
-	newAudit.ProposerSso = proposerRela.SsoId
-	// 审核者、接收者
-	if specialUserId > 0 {
-		newAudit.Special = 1
-		newAudit.Sso = specialUserId
-	} else {
-		newAudit.Special = 0
-		newAudit.Count = targetMonad.Class
-		newAudit.MonadId = targetMonad.Id
-		newAudit.RelationalId = targetMonad.Pertain
-		newAudit.Sso = targetRela.SsoId
-	}
-	newAudit.Add()
-}
-
-// proposer 任务提交者
-// target 待办或任务审核者
-// 2任务,1已审核待办，0未审核待办
-// 创建普通的待办和自己的任务
-// specialUserId 特殊审核人 sso id
-func createAuditForNewMonad(proposerMonad, targetMonad *model.Monad,
-	proposerRela, targetRela *model.Relational,
-	specialUserId int64, stat int) {
-	newAudit := new(model.Audit)
-	newAudit.Isnewmonad = 1
-	newAudit.Status = stat // 2任务；非2是待办,待办分1已审核,0未审核
-	newAudit.Create = time.Now().Local()
-	newAudit.Operation = newAudit.Create
-	// 提交者、发起者
-	newAudit.ProposerCount = proposerMonad.Class
-	newAudit.ProposerMonadId = proposerMonad.Id
-	newAudit.ProposerRelationalId = proposerMonad.Pertain
-	newAudit.ProposerSso = proposerRela.SsoId
-	// 审核者、接收者
-	if specialUserId > 0 {
-		newAudit.Special = 1
-		newAudit.Sso = specialUserId
-	} else {
-		newAudit.Special = 0
-		newAudit.Count = targetMonad.Class
-		newAudit.MonadId = targetMonad.Id
-		newAudit.RelationalId = targetMonad.Pertain
-		newAudit.Sso = targetRela.SsoId
-	}
-	newAudit.Add()
 }

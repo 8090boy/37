@@ -135,7 +135,7 @@ func NewTask(res rest.ResponseWriter, req *rest.Request) {
 			// 指定帐号
 			specialUserId := int64(3)
 			// add audit
-			createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 0)
+			createAudit(myMonad, parMonad, specialUserId, true)
 			// 组装对方信息
 			resultClent["pi"] = resultAssignUserInfo(specialUserId)
 			resultClent["status"] = 5
@@ -148,7 +148,7 @@ func NewTask(res rest.ResponseWriter, req *rest.Request) {
 	ssoid := strconv.FormatInt(parentRela.SsoId, 10)
 	parentUser := findUserById(ssoid)
 	// add audit
-	createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+	createAudit(myMonad, parMonad, 0, true)
 	// 组装对方信息
 	resultClent["pi"] = resultAuditerInfo(parentRela, parentUser)
 	// 对方推荐人信息

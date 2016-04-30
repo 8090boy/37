@@ -14,7 +14,7 @@ func InitData() {
 	model.DelAllMessage()
 	model.DelAllMonad()
 	model.DelAllRelational()
-	initTJZ("18620131415", "25", 35)
+	//	initTJZ("18620131415", "25", 35)
 	initSpaceMember("17750662398")                           //空号
 	initRelationalAndMonadData("18650710067", "13790226216") // 股东
 	initRelationalAndMonadData("18059244379", "13790226216") // 股东

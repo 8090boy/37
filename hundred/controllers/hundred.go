@@ -243,7 +243,7 @@ func moandUpgrade(monad *model.Monad) bool {
 		// 设置收款人为运营组帐号
 		// 给运营组帐号添加待办
 		targetRelaAmin = targetRelaAmin.FindByRelaId(0)
-		createAuditForNewMonad(monad, nil, rela, nil, targetRelaAmin.Ssoid, 0)
+		createAudit(monad, nil, targetRelaAmin.Ssoid, false)
 		return true
 	}
 	// 真正的收款人信息
@@ -260,17 +260,17 @@ func moandUpgrade(monad *model.Monad) bool {
 		if strings.ToLower(targetRela.Referrer) == "top" {
 			fmt.Println("+++++++mainUpgrade  top  ++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
-			createAudit(monad, nil, rela, nil, targetRelaAmin.Ssoid, 2)
+			createAudit(monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		} else {
 			fmt.Println("+++++++mainUpgrade top 00++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(0) // 不是股东就特定给0好id的管理者
-			createAudit(monad, nil, rela, nil, targetRelaAmin.Ssoid, 2)
+			createAudit(monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		}
 	}
 	fmt.Println("+++++++mainUpgrade ok ++++++++")
-	createAudit(monad, targetMonad, rela, targetRela, 0, 2)
+	createAudit(monad, targetMonad, 0, false)
 	return true
 }
 
@@ -307,13 +307,6 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 		}
 	}
 
-	// 收入大于支出3倍
-	isOk2 := rela.Income >= (rela.Spending * 3)
-
-	if isOk2 {
-		return true
-	}
-
 	// 预计支出金额
 	refSpending := INCOME[monad.Class+1]
 	// 总支出 = 实际已经支出 + 预计支出
@@ -331,7 +324,7 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 }
 
 // 可以出单吗
-func accpetCreate(myRelational *model.Relational) bool {
+func spaceOfTime(myRelational *model.Relational) bool {
 
 	conf = GetConfig()
 	// 收入大于支出时，需要出单
@@ -355,7 +348,7 @@ func accpetCreate(myRelational *model.Relational) bool {
 // 是否应该出单
 // 出单了就返回 true,没有出单返回 false
 func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
-	sta := accpetCreate(myRelational)
+	sta := spaceOfTime(myRelational)
 	if !sta {
 		return false
 	}
@@ -373,7 +366,7 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
 	if parentRela.Referrer == "top" {
 		// add audit
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+		createAudit(myMonad, parMonad, 0, true)
 		return true
 	}
 	state := false
@@ -390,9 +383,9 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 		// 指定帐号
 		specialUserId := int64(3)
 		// add audit
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, specialUserId, 0)
+		createAudit(myMonad, parMonad, specialUserId, true)
 	} else {
-		createAuditForNewMonad(myMonad, parMonad, myRelational, parentRela, 0, 0)
+		createAudit(myMonad, parMonad, 0, true)
 	}
 	return true
 }

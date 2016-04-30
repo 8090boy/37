@@ -11,6 +11,7 @@ import (
 	"sso/user"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -81,6 +82,43 @@ func findMyTodos(myRelaId int64) map[string]string {
 
 }
 
+// proposer 任务提交者
+// target 待办或任务审核者
+// 2任务,1已审核待办，0未审核待办
+// 创建普通的待办和自己的任务
+// specialUserId 特殊审核人 sso id
+func createAudit(proposerMonad, targetMonad *model.Monad, specialUserId int64, firstCreat bool) {
+	newAudit := new(model.Audit)
+	if firstCreat {
+		newAudit.Isnewmonad = 1 // 是新单子
+	} else {
+		newAudit.Isnewmonad = 0 // 是单子升级(任务)
+	}
+
+	// 审核者、接收者
+	if targetMonad == nil { // 代表接受任务的审核人是特殊账户
+		newAudit.Special = 1
+		newAudit.Sso = specialUserId
+	} else {
+		targetRela := new(model.Relational).ById(targetMonad.Pertain) // 接受任务的审核人
+		newAudit.Special = 0
+		newAudit.Count = targetMonad.Class
+		newAudit.MonadId = targetMonad.Id
+		newAudit.RelationalId = targetMonad.Pertain
+		newAudit.Sso = targetRela.SsoId
+	}
+	// 提交者、发起者
+	proposerRela := new(model.Relational).ById(proposerMonad.Pertain) // 发起提交人
+	newAudit.ProposerCount = proposerMonad.Class
+	newAudit.ProposerMonadId = proposerMonad.Id
+	newAudit.ProposerRelationalId = proposerMonad.Pertain
+	newAudit.ProposerSso = proposerRela.SsoId
+	newAudit.Status = 0 // 1已审核待办(审核后删除), 0待审核任务 2待提交任务；
+	newAudit.Create = time.Now().Local()
+	newAudit.Operation = newAudit.Create
+	newAudit.Add()
+}
+
 // 任务及新单子未被确认的总金额
 func taskSum(rela *model.Relational) int64 {
 	var firstTaskValue int64 = 0
@@ -89,7 +127,6 @@ func taskSum(rela *model.Relational) int64 {
 	if countRef > 0 {
 		for _, au := range myAus {
 			firstTaskValue += INCOME[au.Count]
-
 		}
 	}
 	return firstTaskValue
