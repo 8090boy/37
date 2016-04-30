@@ -147,9 +147,13 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	if spendersRela.OneCount == RELA_STATUS_UNBORN {
 		spendersRela.Status = 1
 	}
-	// 是主单不需要增加别人的支出
-	if spendersMonad.IsMain == 0 {
-		spendersRela.Spending = spendersRela.Spending + income
+	// 对方支出增加
+	spendersRela.Spending = spendersRela.Spending + income
+	// 对方刚加入不增加支出
+	if spendersMonad.Id == spendersRela.CurrentMonad {
+		if spendersRela.Spending == income && spendersRela.Income == 0 {
+			spendersRela.Spending = 0
+		}
 	}
 
 	// 别人的主单，关系户状态
