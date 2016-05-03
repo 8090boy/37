@@ -95,7 +95,7 @@ func createAudit(proposerMonad, targetMonad *model.Monad, specialUserId int64, f
 		newAudit.Isnewmonad = 0 // 是单子升级(任务)
 	}
 
-	// 审核者、接收者
+	// 审核者信息
 	if targetMonad == nil { // 代表接受任务的审核人是特殊账户
 		newAudit.Special = 1
 		newAudit.Sso = specialUserId
@@ -107,7 +107,8 @@ func createAudit(proposerMonad, targetMonad *model.Monad, specialUserId int64, f
 		newAudit.RelationalId = targetMonad.Pertain
 		newAudit.Sso = targetRela.SsoId
 	}
-	// 提交者、发起者
+
+	// 提交者信息
 	proposerRela := new(model.Relational).ById(proposerMonad.Pertain) // 发起提交人
 	newAudit.ProposerCount = proposerMonad.Class
 	newAudit.ProposerMonadId = proposerMonad.Id
@@ -576,13 +577,13 @@ func findMonadByMessageId(mesId string) (*model.Monad, *model.Relational, *model
 
 // 主单需要限制升级
 
-func mainMonadTask(mainMonad *model.Monad) (isOk bool, fCount, sCount int) {
-	pertainId := mainMonad.Pertain
+func mainMonadTask(monad *model.Monad) (isOk bool, fCount, sCount int) {
+	pertainId := monad.Pertain
 	isOk = false
 	fCount, sCount = findRecommandInfo(pertainId)
 	// 下一层就是直推的
 	// 下二层就是间接推荐的
-	switch mainMonad.Task + 1 {
+	switch monad.Task + 1 {
 	case 3: // 升3级：下一层至少有一人
 		if fCount > 0 {
 			isOk = true

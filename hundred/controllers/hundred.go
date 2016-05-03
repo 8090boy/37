@@ -71,6 +71,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
 	}
+
 	sweet["r"] = *relational
 	unfreezeDatetime := conf.Get("common", "unfreezeDatetime")
 	refHours, _ := time.ParseDuration(unfreezeDatetime)   // 未出单// s秒,m分,h小时,月
@@ -79,6 +80,8 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	// 有收过款的、不是股东、出过一次子单的间隔一定时间没有出单 ,会冻结
 	//my main monad
 	myMainmonad := new(model.Monad)
+	// 升级主单
+	moandUpgrade(myMainmonad)
 	if relational.CurrentMonad > 0 {
 		myMainmonad = myMainmonad.ById(relational.CurrentMonad)
 	}
@@ -143,7 +146,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		if relational.Income > taskSum(relational) {
 			// 正常状态时需要自动出单
 			if relational.Status == RELA_STATUS_NORMAL {
-				_autoNewMonad(myInfo, relational, myMainmonad)
+				_autoCreateMonad(myInfo, relational, myMainmonad)
 			}
 		}
 
@@ -185,8 +188,6 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	// 升级主单
-	moandUpgrade(myMainmonad)
 	// 我的任务
 	myTask, count := new(model.Audit).AuditsByPropRela(relational.Id)
 	if count > 0 {
@@ -211,10 +212,10 @@ func moandUpgrade(monad *model.Monad) bool {
 		return false
 	}
 
-	if monad.IsMain == 1 && monad.Task > 1 {
+	if monad.IsMain == 1 {
 		// 需要推荐人员数量限制
 		isOk, _, _ := mainMonadTask(monad)
-		if !isOk { // 推荐人数不够
+		if isOk == false { // 推荐人数不够
 			return false
 		}
 	}
@@ -222,11 +223,12 @@ func moandUpgrade(monad *model.Monad) bool {
 	rela := new(model.Relational).ById(monad.Pertain)
 
 	// 收入大于 支出金额，才能产生任务
-	if !incomeGTspending(rela, monad) {
+	if assertIncomeGTspending(rela, monad) == false {
 		return false
 	}
-
-	//升级到
+	// 产生升级任务
+	// 产生升级任务
+	//升级到几级
 	targetLayer := monad.Class + 1
 	// 付出金额 pay out
 	income := INCOME[targetLayer]
@@ -276,7 +278,7 @@ func moandUpgrade(monad *model.Monad) bool {
 
 //收入 大于 总支出
 // monad 当前收款单子
-func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
+func assertIncomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 
 	if rela == nil {
 		return false
@@ -314,9 +316,7 @@ func incomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 	// 总支出 = 加上待确认的支出
 	spendingSum = spendingSum + taskSum(rela)
 	// 总收入大于总支出
-	isOk1 := rela.Income >= spendingSum
-
-	if isOk1 {
+	if rela.Income > spendingSum {
 		return true
 	}
 
@@ -347,7 +347,7 @@ func spaceOfTime(myRelational *model.Relational) bool {
 // 自动出单
 // 是否应该出单
 // 出单了就返回 true,没有出单返回 false
-func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
+func _autoCreateMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
 	sta := spaceOfTime(myRelational)
 	if !sta {
 		return false
@@ -383,7 +383,7 @@ func _autoNewMonad(myUser *user.User, myRelational *model.Relational, myMainMona
 		// 指定帐号
 		specialUserId := int64(3)
 		// add audit
-		createAudit(myMonad, parMonad, specialUserId, true)
+		createAudit(myMonad, nil, specialUserId, true)
 	} else {
 		createAudit(myMonad, parMonad, 0, true)
 	}

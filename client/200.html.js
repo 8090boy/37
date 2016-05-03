@@ -38,7 +38,6 @@ var main = {
         ui.plat = document.querySelector("#main").querySelector(".platform");
         this.ui = ui;
         this.showUi()
-        this.MonadNormal()
         this.uTagStas()
     },
     uTagStas: function () {
@@ -55,6 +54,7 @@ var main = {
     showUi: function () {
         document.querySelector("#info .username").innerText = my37.u.Alias || my37.u.Mobile;
         document.querySelector("#info .wechat").innerText = my37.u.Wechat;
+       
         if (!this.r) {
             return this.noHaveRela()
         }
@@ -67,13 +67,15 @@ var main = {
         if (!this.m.State) {
             return this.waitAccpcet()
         }
+         this.MonadNormal()
 
     },
     MonadNormal: function () {
         this.defaultCountUp(this.r.Income, this.r.Spending, this.r.Loss);
         this._showStartTag();
-        document.querySelector("#todo").innerText = 0;
-        document.querySelector(".todo").style.display = 'none'
+        
+        
+        
         if (this.todos) {
             if (this.todos.length) {
                 document.querySelector("#todo").innerText = this.todos.length;

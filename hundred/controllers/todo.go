@@ -139,9 +139,10 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		myRela.Edit()
 	}
 
-	// 别人的支出增加
+	// 对方账户
 	spendersRela := new(model.Relational)
 	spendersRela = spendersRela.ById(audit.ProposerRelationalId)
+	// 对方主单
 	spenderMainMonad := findParentMainMonad(audit.ProposerRelationalId)
 
 	if spendersRela.OneCount == RELA_STATUS_UNBORN {
