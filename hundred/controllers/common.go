@@ -583,7 +583,9 @@ func mainMonadTask(monad *model.Monad) (isOk bool, fCount, sCount int) {
 	fCount, sCount = findRecommandInfo(pertainId)
 	// 下一层就是直推的
 	// 下二层就是间接推荐的
-	switch monad.Task + 1 {
+	switch monad.Class + 1 {
+	case 2: // 升2级
+		isOk = true
 	case 3: // 升3级：下一层至少有一人
 		if fCount > 0 {
 			isOk = true

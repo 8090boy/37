@@ -211,7 +211,7 @@ func moandUpgrade(monad *model.Monad) bool {
 	if monad.Id == 0 {
 		return false
 	}
-
+	fmt.Println("------moandUpgrade-----1------------")
 	if monad.IsMain == 1 {
 		// 需要推荐人员数量限制
 		isOk, _, _ := mainMonadTask(monad)
@@ -219,7 +219,7 @@ func moandUpgrade(monad *model.Monad) bool {
 			return false
 		}
 	}
-
+	fmt.Println("------moandUpgrade-----2------------")
 	rela := new(model.Relational).ById(monad.Pertain)
 
 	// 收入大于 支出金额，才能产生任务
@@ -238,7 +238,7 @@ func moandUpgrade(monad *model.Monad) bool {
 
 	targetMonad := findParentMonad(monad, targetLayer)
 	targetRelaAmin := new(manage.Relaadmin)
-
+	fmt.Println("------moandUpgrade-----3------------")
 	// 审核方单子不存在
 	if targetMonad == nil {
 		fmt.Println("+++++++mainUpgrade  nil ++++++++")
@@ -248,6 +248,7 @@ func moandUpgrade(monad *model.Monad) bool {
 		createAudit(monad, nil, targetRelaAmin.Ssoid, false)
 		return true
 	}
+
 	// 真正的收款人信息
 	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
 	// 收款方主单或子单，rela状态不正常

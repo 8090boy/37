@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	model "hundred/models"
 	"hundred/models/manage"
 	"sso/user"
@@ -217,7 +218,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	// 收款单子增加一次收入
 	myAuMonad.Count = myAuMonad.Count + 1
 	myAuMonad.Edit()
-
+	fmt.Println("-----------1-------------")
 	isOk := moandUpgrade(myAuMonad)
 	if isOk {
 		result["influence"] = true
