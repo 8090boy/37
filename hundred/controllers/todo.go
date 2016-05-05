@@ -114,16 +114,63 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("1")
 		return
 	}
+	// 审核单子
+	isOK := receiveAudit(audit, userA)
+	if !isOK {
+		rep.WriteJson("3")
+		return
+	}
+	if audit.Special == 1 {
+		rep.WriteJson("ok")
+		return
+	}
+	//
+	// 产生自己的升级任务 开始
+	// 产生自己的升级任务 开始
+	// 产生自己的升级任务 开始
+	//
+	myAuMonad := new(model.Monad)
+	myAuMonad = myAuMonad.ById(audit.MonadId)
+	// 任何单子级别大于6将不产生任务
+	if myAuMonad.Class == 7 {
+		result["influence"] = false
+		rep.WriteJson(result)
+		return
+	}
+
+	// 收款单子增加一次收入
+	myAuMonad.Count = myAuMonad.Count + 1
+	myAuMonad.Edit()
+	fmt.Println("-----------1-------------")
+	isOk := moandUpgrade(myAuMonad)
+	if isOk {
+		result["influence"] = true
+		rep.WriteJson(result)
+		return
+	} else {
+		result["influence"] = false
+		rep.WriteJson(result)
+		return
+	}
+
+}
+
+// receive audit
+func receiveAudit(audit *model.Audit, user *user.User) bool {
+	if user.Id != audit.RelationalId {
+		return false
+	}
 	income := INCOME[0]
 	income = INCOME[audit.ProposerCount+1]
 	// 查找出对方单子信息
 	spendersMonad := new(model.Monad)
 	spendersMonad = spendersMonad.ById(audit.ProposerMonadId)
 	myRela := new(model.Relational)
+	// 审核者账户
 	// 是否特殊账户
 	if audit.Special == 1 {
 		// 特殊账户收入增加
-		myRelaAdmin := new(manage.Relaadmin).FindBySsoId(userA.Id)
+		myRelaAdmin := new(manage.Relaadmin).FindBySsoId(user.Id)
 		myRelaAdmin.Income = myRelaAdmin.Income + income
 		myRelaAdmin.UpdateWhereColName(myRelaAdmin.Relaid, myRelaAdmin.Ssoid)
 
@@ -140,6 +187,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		myRela.Edit()
 	}
 
+	//
 	// 对方账户
 	spendersRela := new(model.Relational)
 	spendersRela = spendersRela.ById(audit.ProposerRelationalId)
@@ -198,38 +246,9 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	// 删除待确认信息
 	audit.Del(audit.Id)
 	if audit.Special == 1 {
-		rep.WriteJson("ok")
-		return
+		return true
 	}
-	//
-	// 产生自己的升级任务 开始
-	// 产生自己的升级任务 开始
-	// 产生自己的升级任务 开始
-	//
-	myAuMonad := new(model.Monad)
-	myAuMonad = myAuMonad.ById(audit.MonadId)
-	// 任何单子级别大于6将不产生任务
-	if myAuMonad.Class == 7 {
-		result["influence"] = false
-		rep.WriteJson(result)
-		return
-	}
-
-	// 收款单子增加一次收入
-	myAuMonad.Count = myAuMonad.Count + 1
-	myAuMonad.Edit()
-	fmt.Println("-----------1-------------")
-	isOk := moandUpgrade(myAuMonad)
-	if isOk {
-		result["influence"] = true
-		rep.WriteJson(result)
-		return
-	} else {
-		result["influence"] = false
-		rep.WriteJson(result)
-		return
-	}
-
+	return true
 }
 
 // 此单子有任务未完成
