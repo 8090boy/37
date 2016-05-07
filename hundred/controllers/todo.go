@@ -114,8 +114,9 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("1")
 		return
 	}
+
 	// 审核单子
-	isOK := receiveAudit(audit, userA)
+	isOK := receiveAudit(*audit, *userA)
 	if !isOK {
 		rep.WriteJson("3")
 		return
@@ -142,30 +143,28 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myAuMonad.Count = myAuMonad.Count + 1
 	myAuMonad.Edit()
 	fmt.Println("-----------1-------------")
-	isOk := moandUpgrade(myAuMonad)
+	isOk := moandUpgrade(*myAuMonad)
 	if isOk {
 		result["influence"] = true
-		rep.WriteJson(result)
-		return
 	} else {
 		result["influence"] = false
-		rep.WriteJson(result)
-		return
 	}
+	rep.WriteJson(result)
+	return
 
 }
 
 // receive audit
-func receiveAudit(audit *model.Audit, user *user.User) bool {
-	if user.Id != audit.RelationalId {
+func receiveAudit(audit model.Audit, user user.User) bool {
+	if user.Id != audit.Sso {
+		fmt.Println("++++++++11++++++++")
 		return false
 	}
-	income := INCOME[0]
-	income = INCOME[audit.ProposerCount+1]
+	fmt.Println("++++++++ 22 ++++++++")
+	income := INCOME[audit.ProposerCount+1]
 	// 查找出对方单子信息
-	spendersMonad := new(model.Monad)
-	spendersMonad = spendersMonad.ById(audit.ProposerMonadId)
-	myRela := new(model.Relational)
+	spendersMonad := new(model.Monad).ById(audit.ProposerMonadId)
+
 	// 审核者账户
 	// 是否特殊账户
 	if audit.Special == 1 {
@@ -175,8 +174,9 @@ func receiveAudit(audit *model.Audit, user *user.User) bool {
 		myRelaAdmin.UpdateWhereColName(myRelaAdmin.Relaid, myRelaAdmin.Ssoid)
 
 	} else {
+		fmt.Println("++++++++ my rela ++++++++")
 		// 自己收入金额增加
-		myRela = myRela.ById(audit.RelationalId)
+		myRela := new(model.Relational).ById(audit.RelationalId)
 		myRela.Income = myRela.Income + income
 		// 自己是否该出局了
 		maxIncomeRef := conf.Get("common", "maxIncome")

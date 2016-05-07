@@ -81,7 +81,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	//my main monad
 	myMainmonad := new(model.Monad)
 	// 升级主单
-	moandUpgrade(myMainmonad)
+	moandUpgrade(*myMainmonad)
 	if relational.CurrentMonad > 0 {
 		myMainmonad = myMainmonad.ById(relational.CurrentMonad)
 	}
@@ -204,17 +204,15 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 }
 
 // 根据relational升级单子
-func moandUpgrade(monad *model.Monad) bool {
-	if monad == nil {
-		return false
-	}
+func moandUpgrade(monad model.Monad) bool {
+	fmt.Println(monad)
 	if monad.Id == 0 {
 		return false
 	}
 	fmt.Println("------moandUpgrade-----1------------")
 	if monad.IsMain == 1 {
 		// 需要推荐人员数量限制
-		isOk, _, _ := mainMonadTask(monad)
+		isOk, _, _ := mainMonadTask(&monad)
 		if isOk == false { // 推荐人数不够
 			return false
 		}
@@ -223,7 +221,7 @@ func moandUpgrade(monad *model.Monad) bool {
 	rela := new(model.Relational).ById(monad.Pertain)
 
 	// 收入大于 支出金额，才能产生任务
-	if assertIncomeGTspending(rela, monad) == false {
+	if assertIncomeGTspending(rela, &monad) == false {
 		return false
 	}
 	// 产生升级任务
@@ -236,7 +234,7 @@ func moandUpgrade(monad *model.Monad) bool {
 	monad.Task = monad.Task + 1
 	monad.Edit()
 
-	targetMonad := findParentMonad(monad, targetLayer)
+	targetMonad := findParentMonad(&monad, targetLayer)
 	targetRelaAmin := new(manage.Relaadmin)
 	fmt.Println("------moandUpgrade-----3------------")
 	// 审核方单子不存在
@@ -245,7 +243,7 @@ func moandUpgrade(monad *model.Monad) bool {
 		// 设置收款人为运营组帐号
 		// 给运营组帐号添加待办
 		targetRelaAmin = targetRelaAmin.FindByRelaId(0)
-		createAudit(monad, nil, targetRelaAmin.Ssoid, false)
+		createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 		return true
 	}
 
@@ -263,17 +261,17 @@ func moandUpgrade(monad *model.Monad) bool {
 		if strings.ToLower(targetRela.Referrer) == "top" {
 			fmt.Println("+++++++mainUpgrade  top  ++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
-			createAudit(monad, nil, targetRelaAmin.Ssoid, false)
+			createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		} else {
 			fmt.Println("+++++++mainUpgrade top 00++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(0) // 不是股东就特定给0好id的管理者
-			createAudit(monad, nil, targetRelaAmin.Ssoid, false)
+			createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		}
 	}
 	fmt.Println("+++++++mainUpgrade ok ++++++++")
-	createAudit(monad, targetMonad, 0, false)
+	createAudit(&monad, targetMonad, 0, false)
 	return true
 }
 
