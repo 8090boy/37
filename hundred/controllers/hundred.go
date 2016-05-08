@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sso/user"
 	"strings"
+	"sync"
 
 	model "hundred/models"
 	manage "hundred/models/manage"
@@ -199,8 +200,12 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	util.WriteJSONP(res, callback+"("+string(all_info)+")")
 }
 
+var updateLock *sync.Mutex
+
 // 根据relational升级单子
 func moandUpgrade(monad model.Monad) bool {
+	updateLock = new(sync.Mutex)
+	updateLock.Lock()
 	//	fmt.Println(monad)
 	if monad.Id == 0 {
 		return false
@@ -230,7 +235,7 @@ func moandUpgrade(monad model.Monad) bool {
 	// 出一次单增加一次任务
 	monad.Task = monad.Task + 1
 	monad.Edit()
-
+	updateLock.Unlock()
 	targetMonad := findParentMonad(&monad, targetLayer)
 	var targetRelaAmin *manage.Relaadmin
 	//	fmt.Println("------moandUpgrade-----3------------")

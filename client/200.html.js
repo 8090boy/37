@@ -374,7 +374,7 @@ var main = {
             var url = "/api/200/v1/todo/submit/" + id;
             this.id = "au_li_" + id;
             ajax.GET(url, this._auditOk.bind(this));
-            main.goon()
+           // main.goon()
         },
         _auditOk: function (msg) {
             if (msg.influence) {

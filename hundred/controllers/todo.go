@@ -7,6 +7,7 @@ import (
 	"sso/user"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
@@ -88,11 +89,15 @@ func NotTodo(rep rest.ResponseWriter, req *rest.Request) {
 	rep.WriteJson("ok")
 }
 
+var submitLock *sync.Mutex
+
 // 提交待办，审核单子
 // 审核单子增加自己收入金额，增加别人的支出
 // 设置审核状态或移除、删除审核信息
 // 激活、解冻别人
 func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
+	submitLock = new(sync.Mutex)
+	submitLock.Lock()
 	//	fmt.Println("-------------- SubmitTodo 1----------------")
 	conf = GetConfig()
 	// 返回信息
@@ -146,6 +151,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	myAuMonad.Edit()
 	// TODO 是否导致审核单子不会增加收入现象
 	isOk := moandUpgrade(*myAuMonad) // 我的收款单子
+	submitLock.Unlock()
 	if isOk {
 		//		fmt.Println("-------------- SubmitTodo 6----------------")
 		result["influence"] = true

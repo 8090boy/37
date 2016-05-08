@@ -7,6 +7,7 @@ import (
 	"my/util"
 	"net/http"
 	"os"
+	"runtime"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
@@ -16,7 +17,7 @@ var wd, _ = os.Getwd()
 var hostAndPort string
 
 func init() {
-	//runtime.GOMAXPROCS(1)
+	runtime.GOMAXPROCS(1)
 	//	prefileConf := util.NewConfig("F:\\GOPATH\\src\\prefile.ini")
 	prefileConf := util.NewConfig(wd + util.GetSysSplit() + "prefile.ini")
 
