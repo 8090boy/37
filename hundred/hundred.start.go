@@ -16,7 +16,7 @@ var wd, _ = os.Getwd()
 var hostAndPort string
 
 func init() {
-
+	//runtime.GOMAXPROCS(1)
 	//	prefileConf := util.NewConfig("F:\\GOPATH\\src\\prefile.ini")
 	prefileConf := util.NewConfig(wd + util.GetSysSplit() + "prefile.ini")
 

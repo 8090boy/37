@@ -8,16 +8,12 @@ import (
 	"net/url"
 	"sso/user"
 	"strconv"
-	"sync"
 	"time"
 )
 
-var lockSignin sync.Mutex
-
 // No reference, cannot be registered
 func Signin(w http.ResponseWriter, r *http.Request) {
-	lockSignin.Lock()
-	defer lockSignin.Unlock()
+
 	referrerId := r.FormValue("referrerId")
 	alias := r.FormValue("alias")
 	mobile := r.FormValue("mobile")

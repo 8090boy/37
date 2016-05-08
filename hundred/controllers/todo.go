@@ -93,6 +93,7 @@ func NotTodo(rep rest.ResponseWriter, req *rest.Request) {
 // 设置审核状态或移除、删除审核信息
 // 激活、解冻别人
 func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
+	//	fmt.Println("-------------- SubmitTodo 1----------------")
 	conf = GetConfig()
 	// 返回信息
 	result := make(map[string]interface{})
@@ -101,6 +102,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("0")
 		return
 	}
+	//	fmt.Println("-------------- SubmitTodo 2----------------")
 	cookie, _ := req.Cookie("token")
 	token := cookie.Value
 	// token 校验
@@ -114,7 +116,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("1")
 		return
 	}
-
+	//	fmt.Println("-------------- SubmitTodo 3----------------")
 	// 审核单子
 	isOK := receiveAudit(*audit, *userA)
 	if !isOK {
@@ -125,28 +127,30 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("ok")
 		return
 	}
+	//	fmt.Println("-------------- SubmitTodo 4----------------")
 	//
 	// 产生自己的升级任务 开始
 	// 产生自己的升级任务 开始
 	// 产生自己的升级任务 开始
 	//
-	myAuMonad := new(model.Monad)
-	myAuMonad = myAuMonad.ById(audit.MonadId)
+	myAuMonad := new(model.Monad).ById(audit.MonadId)
 	// 任何单子级别大于6将不产生任务
 	if myAuMonad.Class == 7 {
 		result["influence"] = false
 		rep.WriteJson(result)
 		return
 	}
-
+	//	fmt.Println("-------------- SubmitTodo 5----------------")
 	// 收款单子增加一次收入
 	myAuMonad.Count = myAuMonad.Count + 1
 	myAuMonad.Edit()
-	fmt.Println("-----------1-------------")
-	isOk := moandUpgrade(*myAuMonad)
+	// TODO 是否导致审核单子不会增加收入现象
+	isOk := moandUpgrade(*myAuMonad) // 我的收款单子
 	if isOk {
+		//		fmt.Println("-------------- SubmitTodo 6----------------")
 		result["influence"] = true
 	} else {
+		//		fmt.Println("-------------- SubmitTodo 7----------------")
 		result["influence"] = false
 	}
 	rep.WriteJson(result)
@@ -157,10 +161,10 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 // receive audit
 func receiveAudit(audit model.Audit, user user.User) bool {
 	if user.Id != audit.Sso {
-		fmt.Println("++++++++11++++++++")
+		//		fmt.Println("++++++++ receiveAudit 11++++++++")
 		return false
 	}
-	fmt.Println("++++++++ 22 ++++++++")
+	//	fmt.Println("++++++++receiveAudit 22 ++++++++")
 	income := INCOME[audit.ProposerCount+1]
 	// 查找出对方单子信息
 	spendersMonad := new(model.Monad).ById(audit.ProposerMonadId)
@@ -168,15 +172,17 @@ func receiveAudit(audit model.Audit, user user.User) bool {
 	// 审核者账户
 	// 是否特殊账户
 	if audit.Special == 1 {
+		//		fmt.Println("++++++++receiveAudit 33.1 ++++++++")
 		// 特殊账户收入增加
 		myRelaAdmin := new(manage.Relaadmin).FindBySsoId(user.Id)
 		myRelaAdmin.Income = myRelaAdmin.Income + income
 		myRelaAdmin.UpdateWhereColName(myRelaAdmin.Relaid, myRelaAdmin.Ssoid)
 
 	} else {
-		fmt.Println("++++++++ my rela ++++++++")
+		fmt.Println("++++++++receiveAudit 33.2 ++++++++")
 		// 自己收入金额增加
-		myRela := new(model.Relational).ById(audit.RelationalId)
+		myRela := new(model.Relational)
+		myRela = myRela.ById(audit.RelationalId)
 		myRela.Income = myRela.Income + income
 		// 自己是否该出局了
 		maxIncomeRef := conf.Get("common", "maxIncome")
@@ -184,13 +190,15 @@ func receiveAudit(audit model.Audit, user user.User) bool {
 		if myRela.Income > maxIncome {
 			myRela.Status = RELA_STATUS_Retired
 		}
+		fmt.Println(myRela)
+		fmt.Println("++++++++++++++++++++++++receiveAudit 33.3 +++++++++++++++++++++++++++")
 		myRela.Edit()
+		fmt.Println("++++++++++++++++++++++++receiveAudit 33.4 +++++++++++++++++++++++++++")
 	}
-
+	fmt.Println("++++++++receiveAudit 44 ++++++++")
 	//
 	// 对方账户
-	spendersRela := new(model.Relational)
-	spendersRela = spendersRela.ById(audit.ProposerRelationalId)
+	spendersRela := new(model.Relational).ById(audit.ProposerRelationalId)
 	// 对方主单
 	spenderMainMonad := findParentMainMonad(audit.ProposerRelationalId)
 
@@ -205,7 +213,7 @@ func receiveAudit(audit model.Audit, user user.User) bool {
 			spendersRela.Spending = 0
 		}
 	}
-
+	//	fmt.Println("++++++++receiveAudit 55 ++++++++")
 	// 别人的主单，关系户状态
 	if spenderMainMonad != nil {
 		// 因为未完成任务 4
@@ -243,6 +251,7 @@ func receiveAudit(audit model.Audit, user user.User) bool {
 	spenderMainMonad.Edit()
 	spendersMonad.Edit()
 	spendersRela.Edit()
+	//	fmt.Println("++++++++receiveAudit 66 ++++++++")
 	// 删除待确认信息
 	audit.Del(audit.Id)
 	if audit.Special == 1 {

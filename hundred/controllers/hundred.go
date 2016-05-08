@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sso/user"
 	"strings"
-	"sync"
 
 	model "hundred/models"
 	manage "hundred/models/manage"
@@ -15,12 +14,9 @@ import (
 	"time"
 )
 
-var lockValidate sync.Mutex
-
 // 获取自己37相关数据
 func Myrelational(res http.ResponseWriter, req *http.Request) {
-	lockValidate.Lock()
-	defer lockValidate.Unlock()
+
 	conf = GetConfig()
 	callback := req.FormValue("cb")
 	var sweet map[string]interface{} = make(map[string]interface{})
@@ -205,11 +201,11 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 
 // 根据relational升级单子
 func moandUpgrade(monad model.Monad) bool {
-	fmt.Println(monad)
+	//	fmt.Println(monad)
 	if monad.Id == 0 {
 		return false
 	}
-	fmt.Println("------moandUpgrade-----1------------")
+	//	fmt.Println("------moandUpgrade-----1------------")
 	if monad.IsMain == 1 {
 		// 需要推荐人员数量限制
 		isOk, _, _ := mainMonadTask(&monad)
@@ -217,11 +213,12 @@ func moandUpgrade(monad model.Monad) bool {
 			return false
 		}
 	}
-	fmt.Println("------moandUpgrade-----2------------")
+	//	fmt.Println("------moandUpgrade-----2------------")
 	rela := new(model.Relational).ById(monad.Pertain)
 
+	// TODO 是否导致审核单子不会增加收入现象
 	// 收入大于 支出金额，才能产生任务
-	if assertIncomeGTspending(rela, &monad) == false {
+	if assertIncomeGTspending(*rela, monad) == false {
 		return false
 	}
 	// 产生升级任务
@@ -235,8 +232,8 @@ func moandUpgrade(monad model.Monad) bool {
 	monad.Edit()
 
 	targetMonad := findParentMonad(&monad, targetLayer)
-	targetRelaAmin := new(manage.Relaadmin)
-	fmt.Println("------moandUpgrade-----3------------")
+	var targetRelaAmin *manage.Relaadmin
+	//	fmt.Println("------moandUpgrade-----3------------")
 	// 审核方单子不存在
 	if targetMonad == nil {
 		fmt.Println("+++++++mainUpgrade  nil ++++++++")
@@ -259,30 +256,26 @@ func moandUpgrade(monad model.Monad) bool {
 		targetRela.Loss = targetRela.Loss + income
 		targetRela.UpdateByColsName("loss")
 		if strings.ToLower(targetRela.Referrer) == "top" {
-			fmt.Println("+++++++mainUpgrade  top  ++++++++")
+			//			fmt.Println("+++++++mainUpgrade  top  ++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
 			createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		} else {
-			fmt.Println("+++++++mainUpgrade top 00++++++++")
+			//			fmt.Println("+++++++mainUpgrade top 00++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(0) // 不是股东就特定给0好id的管理者
 			createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		}
 	}
-	fmt.Println("+++++++mainUpgrade ok ++++++++")
+	//	fmt.Println("+++++++mainUpgrade ok ++++++++")
 	createAudit(&monad, targetMonad, 0, false)
 	return true
 }
 
 //收入 大于 总支出
 // monad 当前收款单子
-func assertIncomeGTspending(rela *model.Relational, monad *model.Monad) bool {
-
-	if rela == nil {
-		return false
-	}
-
+func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
+	// 重点走下这个流程，仔细分析
 	if rela.Income == 0 {
 		return false
 	}
@@ -295,7 +288,7 @@ func assertIncomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 		return false
 	}
 
-	if currentMondUnfinished(monad) {
+	if currentMondUnfinished(&monad) {
 		return false
 	}
 
@@ -313,7 +306,7 @@ func assertIncomeGTspending(rela *model.Relational, monad *model.Monad) bool {
 	// 总支出 = 实际已经支出 + 预计支出
 	spendingSum := rela.Spending + refSpending
 	// 总支出 = 加上待确认的支出
-	spendingSum = spendingSum + taskSum(rela)
+	spendingSum = spendingSum + taskSum(&rela)
 	// 总收入大于总支出
 	if rela.Income > spendingSum {
 		return true

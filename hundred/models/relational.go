@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"my/util"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -221,12 +222,16 @@ func (cate *Relational) ByMob(mob string) *Relational {
 	if len(reSlice) == 0 {
 		return nil
 	}
-
 	return cate.CompoundSingle(reSlice[0])
 }
 
 func (data *Relational) Edit() {
+	editSync1 := new(sync.Mutex)
+	editSync1.Lock()
+	fmt.Println("-------11111111111111111------")
 	_, err := util.Eng.Id(data.Id).Update(data)
+	fmt.Println("-------22222222222222222------")
+	defer editSync1.Unlock()
 	if err != nil {
 		fmt.Println(err)
 	}

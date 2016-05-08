@@ -8,13 +8,11 @@ import (
 	"sso/user"
 	"strconv"
 	"strings"
-	"sync"
+
 	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
 )
-
-var lock sync.Mutex
 
 // 获取升级任务需要的对方信息
 // myMonad是需要升级的单子
@@ -61,8 +59,6 @@ func SubmitTask(rep rest.ResponseWriter, req *rest.Request) {
 func NewTask(res rest.ResponseWriter, req *rest.Request) {
 
 	result := findUserInfo(req)
-	lock.Lock()
-	defer lock.Unlock()
 	myUser := new(user.User)
 	myRelational := new(model.Relational)
 	myMainMonad := new(model.Monad)

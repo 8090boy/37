@@ -13,20 +13,14 @@ function ca(info) {
     }
 }
 var main = {
-    fullScreen: function () {
-        launchFullscreen(document.documentElement)
-    },
-    normalScreen: function () {
-        exitFullScreen()
-    },
+
     goon: function () {
         var url = "/api/200/interaction?cb=main.mystart&v=" + uuid(6, 10);
         jQuery.getScript(url, null)
     },
     mystart: function (obj) {
-        if (obj.s == 2) {
-            return location.href = "6.html"
-        }
+        if (obj.s == 2) return location.href = "6.html"
+
         for (var a in obj) {
             my37[a] = obj[a]
         }
@@ -38,6 +32,10 @@ var main = {
         ui.plat = document.querySelector("#main").querySelector(".platform");
         this.ui = ui;
         this.showUi()
+        if (this.r.Income || this.r.Spending) {
+            this.MonadNormal()
+            this.Audit.UpdateTask()
+        }
         this.uTagStas()
     },
     uTagStas: function () {
@@ -54,7 +52,7 @@ var main = {
     showUi: function () {
         document.querySelector("#info .username").innerText = my37.u.Alias || my37.u.Mobile;
         document.querySelector("#info .wechat").innerText = my37.u.Wechat;
-       
+
         if (!this.r) {
             return this.noHaveRela()
         }
@@ -67,15 +65,12 @@ var main = {
         if (!this.m.State) {
             return this.waitAccpcet()
         }
-         this.MonadNormal()
+        this.MonadNormal()
 
     },
     MonadNormal: function () {
         this.defaultCountUp(this.r.Income, this.r.Spending, this.r.Loss);
         this._showStartTag();
-        
-        
-        
         if (this.todos) {
             if (this.todos.length) {
                 document.querySelector("#todo").innerText = this.todos.length;
@@ -83,7 +78,6 @@ var main = {
                 document.querySelector(".todo").style.display = 'block'
             }
         }
-        this.Audit.UpdateTask();
 
     },
     showDFinfo: function () {
@@ -559,6 +553,12 @@ var main = {
         }
         start = start.toFixed(0);
         document.querySelector("#main article h1").style.backgroundPosition = "50% -" + start + "px"
+    },
+    fullScreen: function () {
+        launchFullscreen(document.documentElement)
+    },
+    normalScreen: function () {
+        exitFullScreen()
     }
 };
 var my = {
