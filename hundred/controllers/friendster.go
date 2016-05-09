@@ -133,12 +133,14 @@ func MyRelationUser(rep rest.ResponseWriter, req *rest.Request) {
 // 邀请的动态码
 func InvitationCode(rep rest.ResponseWriter, req *rest.Request) {
 	conf = GetConfig()
-	userA := findUser(req)
+
+	stat, userA := validateUserInfo(req.Request)
 	result := ""
-	if userA == nil {
+	if !stat {
 		rep.WriteJson(result)
 		return
 	}
+
 	ref := util.Rand().Hex()
 	result = strings.Split(ref, "-")[0]
 

@@ -39,7 +39,6 @@ func initTJZ(mobile, referrerId string, parentMonadId int64) {
 	}
 	//
 	monad := model.NewMonad()
-	monad.State = 1
 	monad.Class = 1
 	monad.MainMonad = 1
 	monad.IsMain = 1
@@ -72,7 +71,6 @@ func initRelationalAndMonadData(topMob, refMob string) {
 	}
 	//
 	monad := model.NewMonad()
-	monad.State = 1
 	monad.Class = 1
 	monad.MainMonad = 1
 	monad.IsMain = 1

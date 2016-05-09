@@ -29,6 +29,8 @@ type Relational struct {
 	Role int
 	//状态与主单一致，0未激活、1正常、2冻结、3违规、4任务太多，9出局、9子单出局
 	Status int
+	// 已有 总量
+	MonadCount int
 	// 20元收款次数
 	OneCount int
 	// 50元收款次数
@@ -228,9 +230,7 @@ func (cate *Relational) ByMob(mob string) *Relational {
 func (data *Relational) Edit() {
 	editSync1 := new(sync.Mutex)
 	editSync1.Lock()
-	fmt.Println("-------11111111111111111------")
 	_, err := util.Eng.Id(data.Id).Update(data)
-	fmt.Println("-------22222222222222222------")
 	defer editSync1.Unlock()
 	if err != nil {
 		fmt.Println(err)
@@ -294,6 +294,8 @@ func (cate *Relational) CompoundSingle(slice map[string][]byte) *Relational {
 			data.Referrer = val
 		case "current_monad":
 			data.CurrentMonad, err = strconv.ParseInt(val, 10, 64)
+		case "monad_count":
+			data.MonadCount, err = strconv.Atoi(val)
 		case "one_count":
 			data.OneCount, err = strconv.Atoi(val)
 		case "two_count":

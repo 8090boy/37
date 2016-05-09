@@ -15,13 +15,7 @@ type Monad struct {
 	IsMain int
 	//主单号：子单默认是主单号
 	MainMonad int64
-	//状态:
-	//状态与rela一致，0未激活、1正常、2冻结、3违规、4任务太多，9出局、9子单出局
-	//冻结是可以解冻的，短期停止收益；
-	//因此冻结因任务太多而冻结是可以解冻，短期停止收益；
-	//违规就是封单，不能参与任何游戏活动，人为设置违规。
-	//结束是自己主单出局时下面的子单的正常结束
-	State int
+
 	//级别:0-7， null、初、中、高
 	Class int
 	//收款次数
@@ -53,7 +47,6 @@ func NewMonad() *Monad {
 	cate.Upgrade = time.Now()
 	cate.Create = time.Now()
 	cate.Class = 0
-	cate.State = 0
 	cate.IsMain = 0
 	return cate
 }
@@ -195,8 +188,6 @@ func (e *Monad) compoundNew(Slice map[string][]byte) *Monad {
 			data.ParentMonad, err = strconv.ParseInt(val, 10, 64)
 		case "is_main":
 			data.IsMain, err = strconv.Atoi(val)
-		case "state":
-			data.State, err = strconv.Atoi(val)
 		case "class":
 			data.Class, err = strconv.Atoi(val)
 		case "count":

@@ -44,6 +44,11 @@ func mainMonadIsCommon(rela *model.Relational, refMon *model.Monad) bool {
 	if rela.Id == 0 || rela.CurrentMonad == 0 {
 		return false
 	}
+
+	if rela.Status > 0 && rela.Status != 3 {
+		return true
+	}
+
 	mainMonadRef := new(model.Monad).ById(rela.CurrentMonad)
 
 	if refMon != nil {
@@ -52,10 +57,5 @@ func mainMonadIsCommon(rela *model.Relational, refMon *model.Monad) bool {
 		}
 	}
 
-	if mainMonadRef != nil {
-		if mainMonadRef.State > 0 && mainMonadRef.State != 3 {
-			return true
-		}
-	}
 	return false
 }

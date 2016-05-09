@@ -4,7 +4,7 @@ function ca(info) {
         location.href = "/";
         return
     }
-    if (info.state > 1) {
+    if (info.state) {
         window.my37 = info;
         document.addEventListener("DOMContentLoaded", main.goon, false)
     } else {
@@ -19,6 +19,7 @@ var main = {
         jQuery.getScript(url, null)
     },
     mystart: function (obj) {
+        obj.r.Status = 2
         if (obj.s == 2) return location.href = "6.html"
 
         for (var a in obj) {
@@ -32,10 +33,7 @@ var main = {
         ui.plat = document.querySelector("#main").querySelector(".platform");
         this.ui = ui;
         this.showUi()
-        if (this.r.Income || this.r.Spending) {
-            this.MonadNormal()
-            this.Audit.UpdateTask()
-        }
+        
         this.uTagStas()
     },
     uTagStas: function () {
@@ -62,15 +60,28 @@ var main = {
         if (!this.m) {
             return this.noState()
         }
-        if (!this.m.State) {
+        if (!this.r.Status) {
             return this.waitAccpcet()
         }
+        if (this.r.Status != 1 && this.r.Status != 9) {
+           this.showFreezeInfo(this.r.Status, "income")
+            this.Audit.UpdateTask()
+           return
+        }
+
+
         this.MonadNormal()
 
     },
     MonadNormal: function () {
         this.defaultCountUp(this.r.Income, this.r.Spending, this.r.Loss);
         this._showStartTag();
+        if (this.r.Status == 9){
+            document.querySelector(".recommand").style.display = 'none'
+            document.querySelector(".one").style.display = 'none'
+            document.querySelector('.retire').style.display = 'block'
+          return;
+        }
         if (this.todos) {
             if (this.todos.length) {
                 document.querySelector("#todo").innerText = this.todos.length;
@@ -374,7 +385,7 @@ var main = {
             var url = "/api/200/v1/todo/submit/" + id;
             this.id = "au_li_" + id;
             ajax.GET(url, this._auditOk.bind(this));
-           // main.goon()
+            // main.goon()
         },
         _auditOk: function (msg) {
             if (msg.influence) {
@@ -487,12 +498,10 @@ var main = {
             prefix: "",
             suffix: ".0"
         };
-        if (this.r.Status === 1) {
-            window.income = new CountUp("income", 0, i, 0, 6, options);
-            window.income.start()
-        } else {
-            this.showFreezeInfo(this.r.Status, "income")
-        }
+
+        window.income = new CountUp("income", 0, i, 0, 6, options);
+        window.income.start()
+
         window.spending = new CountUp("spending", 0, s, 0, 2, options);
         window.spending.start();
         window.loss = new CountUp("loss", 0, l, 0, 1, options);
@@ -511,6 +520,7 @@ var main = {
         if (no === 4) {
             el.innerHTML = "任务数超限额被冻结，<br>请完成任务！否则将无限期冻结！"
         }
+        document.querySelector(".recommand").style.display = 'none'
     },
     CountUpdate: function (el, count) {
         if (el.nodeName) {

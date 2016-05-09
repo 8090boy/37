@@ -90,7 +90,7 @@ func NewTask(res rest.ResponseWriter, req *rest.Request) {
 			return
 		}
 	} else {
-		if myMainMonad.State == 0 {
+		if myRelational.Status == 0 {
 			resultClent["fail"] = true
 			resultClent["status"] = 1
 			res.WriteJson(resultClent)
@@ -117,8 +117,6 @@ func NewTask(res rest.ResponseWriter, req *rest.Request) {
 	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
 	if parentRela.Referrer != "top" {
 		state := false
-		state = state || parMonad.State == RELA_STATUS_FREEZE
-		state = state || parMonad.State == RELA_STATUS_FOUR
 		state = state || parentRela.Status == RELA_STATUS_FREEZE
 		state = state || parentRela.Status == RELA_STATUS_FOUR
 		if parentRela.SsoId > 1 {

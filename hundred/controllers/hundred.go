@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
+
 	"sso/user"
 	"strings"
 	"sync"
@@ -31,7 +31,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	//
-	sweet["state"] = 1
+	sweet["state"] = 1 //正常账户
 	//my relational
 	relational := new(model.Relational)
 	relational = relational.BySsoId(myInfo.Id)
@@ -82,7 +82,7 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	if relational.CurrentMonad > 0 {
 		myMainmonad = myMainmonad.ById(relational.CurrentMonad)
 	}
-	if myMainmonad == nil || myMainmonad.State == RELA_STATUS_Retired || myMainmonad.State == RELA_STATUS_DISCARD {
+	if myMainmonad == nil || relational.Status == RELA_STATUS_Retired || relational.Status == RELA_STATUS_DISCARD {
 		sweet["state"] = 99
 		all_info, _ := json.Marshal(sweet)
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
@@ -110,8 +110,6 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 			// 是否非正常出局
 			if sysNow.After(retirementDate) { // 符合非正常出局条件
 				relational.Status = RELA_STATUS_DISCARD
-				myMainmonad.State = RELA_STATUS_DISCARD
-				//	fmt.Println("非正常出局,手机单独记录，防止再次注册")
 				relational.Edit()
 				myMainmonad.Edit()
 			}
@@ -143,7 +141,9 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 		if relational.Income > taskSum(relational) {
 			// 正常状态时需要自动出单
 			if relational.Status == RELA_STATUS_NORMAL {
+
 				_autoCreateMonad(myInfo, relational, myMainmonad)
+
 			}
 		}
 
@@ -206,11 +206,9 @@ var updateLock *sync.Mutex
 func moandUpgrade(monad model.Monad) bool {
 	updateLock = new(sync.Mutex)
 	updateLock.Lock()
-	//	fmt.Println(monad)
 	if monad.Id == 0 {
 		return false
 	}
-	//	fmt.Println("------moandUpgrade-----1------------")
 	if monad.IsMain == 1 {
 		// 需要推荐人员数量限制
 		isOk, _, _ := mainMonadTask(&monad)
@@ -218,12 +216,10 @@ func moandUpgrade(monad model.Monad) bool {
 			return false
 		}
 	}
-	//	fmt.Println("------moandUpgrade-----2------------")
 	rela := new(model.Relational).ById(monad.Pertain)
 
-	// TODO 是否导致审核单子不会增加收入现象
 	// 收入大于 支出金额，才能产生任务
-	if assertIncomeGTspending(*rela, monad) == false {
+	if !assertIncomeGTspending(*rela, monad) {
 		return false
 	}
 	// 产生升级任务
@@ -238,10 +234,8 @@ func moandUpgrade(monad model.Monad) bool {
 	updateLock.Unlock()
 	targetMonad := findParentMonad(&monad, targetLayer)
 	var targetRelaAmin *manage.Relaadmin
-	//	fmt.Println("------moandUpgrade-----3------------")
 	// 审核方单子不存在
 	if targetMonad == nil {
-		fmt.Println("+++++++mainUpgrade  nil ++++++++")
 		// 设置收款人为运营组帐号
 		// 给运营组帐号添加待办
 		targetRelaAmin = targetRelaAmin.FindByRelaId(0)
@@ -252,7 +246,7 @@ func moandUpgrade(monad model.Monad) bool {
 	// 真正的收款人信息
 	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
 	// 收款方主单或子单，rela状态不正常
-	tarMainMoSata := targetMainMonad.State != 1 || targetMonad.State != 1 || targetRela.Status != 1
+	tarMainMoSata := targetRela.Status != 1
 	// 收款方主或子单级别  小于 付款方单子级别
 	tarMainMoClass := (targetMainMonad.Class < monad.Class) || (targetMonad.Class < monad.Class)
 	// 是符合要求
@@ -261,18 +255,15 @@ func moandUpgrade(monad model.Monad) bool {
 		targetRela.Loss = targetRela.Loss + income
 		targetRela.UpdateByColsName("loss")
 		if strings.ToLower(targetRela.Referrer) == "top" {
-			//			fmt.Println("+++++++mainUpgrade  top  ++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(targetRela.Id) // 是股东就用股东所对应的管理者
 			createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		} else {
-			//			fmt.Println("+++++++mainUpgrade top 00++++++++")
 			targetRelaAmin = targetRelaAmin.FindByRelaId(0) // 不是股东就特定给0好id的管理者
 			createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 			return true
 		}
 	}
-	//	fmt.Println("+++++++mainUpgrade ok ++++++++")
 	createAudit(&monad, targetMonad, 0, false)
 	return true
 }
@@ -303,6 +294,13 @@ func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
 			return true
 		} else {
 			return false
+		}
+	}
+	// 是主单升级时
+	if (rela.CurrentMonad == monad.Id) && (monad.IsMain == 1) {
+		mulriple, _ := strconv.Atoi(conf.Get("common", "mulriple"))
+		if monad.Count == (mulriple*monad.Class)-1 {
+			return true
 		}
 	}
 
@@ -345,10 +343,18 @@ func spaceOfTime(myRelational *model.Relational) bool {
 // 是否应该出单
 // 出单了就返回 true,没有出单返回 false
 func _autoCreateMonad(myUser *user.User, myRelational *model.Relational, myMainMonad *model.Monad) bool {
+	// 时间限制
 	sta := spaceOfTime(myRelational)
 	if !sta {
 		return false
 	}
+	// 出单总量
+	conf = GetConfig()
+	monadCount, _ := strconv.Atoi(conf.Get("common", "monadCount"))
+	if myRelational.MonadCount == monadCount {
+		return false
+	}
+
 	// 出单
 	myMonad := model.NewMonad()
 	myMonad.Pertain = myRelational.Id
@@ -359,6 +365,8 @@ func _autoCreateMonad(myUser *user.User, myRelational *model.Relational, myMainM
 	if !flag {
 		return false
 	}
+	myRelational.MonadCount = myRelational.MonadCount + 1
+	myRelational.Edit()
 	// 因为对方上级单子处于冻结状态
 	parMainMonad := new(model.Monad).ById(parentRela.CurrentMonad)
 	if parentRela.Referrer == "top" {
@@ -367,8 +375,6 @@ func _autoCreateMonad(myUser *user.User, myRelational *model.Relational, myMainM
 		return true
 	}
 	state := false
-	state = state || parMonad.State == RELA_STATUS_FREEZE
-	state = state || parMonad.State == RELA_STATUS_FOUR
 	state = state || parentRela.Status == RELA_STATUS_FREEZE
 	state = state || parentRela.Status == RELA_STATUS_FOUR
 	if parentRela.SsoId > 1 {

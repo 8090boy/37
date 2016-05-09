@@ -152,12 +152,10 @@ func updateStatusIfTasks(rela *model.Relational, mainM *model.Monad) (*model.Rel
 
 	if mesA >= limitA || mesB >= limitB || mesC >= limitC {
 		rela.Status = RELA_STATUS_FOUR
-		mainM.State = RELA_STATUS_FOUR
 	}
 	if rela.Status == RELA_STATUS_FOUR {
 		if mesA < limitA && mesB < limitB && mesC < limitC {
 			rela.Status = RELA_STATUS_NORMAL
-			mainM.State = RELA_STATUS_NORMAL
 		}
 
 	}
