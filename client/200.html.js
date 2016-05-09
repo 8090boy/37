@@ -19,7 +19,7 @@ var main = {
         jQuery.getScript(url, null)
     },
     mystart: function (obj) {
-        obj.r.Status = 2
+      
         if (obj.s == 2) return location.href = "6.html"
 
         for (var a in obj) {

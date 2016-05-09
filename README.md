@@ -5,7 +5,10 @@ interaction 是一款游戏；
 hundred 是一款游戏，与interaction并列的；
 sso 是用户和登陆管理的系统。
 # 环境与数据库
-采用golang1.5和mysql 5+, utf8格式。 nginx1.8+ 代理直接运行在linux系统。
+采用golang1.5+
+mysql 5+, utf8格式。
+nginx1.8+
+win,linux系统
 .sh 是编译，启动文件，在启动好nginx,mysql执行即可。
 # 新需求
 子单总量限制 ok
