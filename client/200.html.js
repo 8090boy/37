@@ -19,7 +19,7 @@ var main = {
         jQuery.getScript(url, null)
     },
     mystart: function (obj) {
-      
+
         if (obj.s == 2) return location.href = "6.html"
 
         for (var a in obj) {
@@ -33,7 +33,7 @@ var main = {
         ui.plat = document.querySelector("#main").querySelector(".platform");
         this.ui = ui;
         this.showUi()
-        
+
         this.uTagStas()
     },
     uTagStas: function () {
@@ -65,12 +65,13 @@ var main = {
         }
         if (this.r.Status != 1 && this.r.Status != 9) {
            this.showFreezeInfo(this.r.Status, "income")
-            this.Audit.UpdateTask()
+
            return
         }
 
 
         this.MonadNormal()
+ this.Audit.UpdateTask()
 
     },
     MonadNormal: function () {
