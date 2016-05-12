@@ -19,9 +19,7 @@ var main = {
         jQuery.getScript(url, null)
     },
     mystart: function (obj) {
-
         if (obj.s == 2) return location.href = "6.html"
-
         for (var a in obj) {
             my37[a] = obj[a]
         }
@@ -33,8 +31,7 @@ var main = {
         ui.plat = document.querySelector("#main").querySelector(".platform");
         this.ui = ui;
         this.showUi()
-
-        this.uTagStas()
+        
     },
     uTagStas: function () {
         var uus = document.querySelectorAll("u");
@@ -65,13 +62,14 @@ var main = {
         }
         if (this.r.Status != 1 && this.r.Status != 9) {
            this.showFreezeInfo(this.r.Status, "income")
-
+           this.Audit.UpdateTask()
+           this.uTagStas()
            return
         }
 
-
         this.MonadNormal()
- this.Audit.UpdateTask()
+        this.Audit.UpdateTask()
+        this.uTagStas()
 
     },
     MonadNormal: function () {
@@ -81,6 +79,9 @@ var main = {
             document.querySelector(".recommand").style.display = 'none'
             document.querySelector(".one").style.display = 'none'
             document.querySelector('.retire').style.display = 'block'
+            document.querySelector('#income').style.textDecoration='line-through'
+            
+            
           return;
         }
         if (this.todos) {
@@ -208,7 +209,7 @@ var main = {
                 htm.push('<p class="wechat"  >微信：<b  onclick="copy()" >' + wechat + "</b></p>");
                 htm.push('<p class="mob"  >手机：<b  onclick="copy()" >' + mob + "</b></p>");
                 htm.push("<p>" + datee + "</p>");
-                htm.push('<u   onclick="main.Audit.Ok(' + this.todos[i].Id + ')" >收到了</u>');
+                htm.push('<u   onclick="main.Audit.OK(' + this.todos[i].Id + ')" >收到了</u>');
                 htm.push('<u class="not"  onclick="main.Audit.Not(' + this.todos[i].Id + ')" >没收到</u>');
                 htm.push("</div>");
                 htm.push("</li>")
@@ -379,14 +380,16 @@ var main = {
         }
     },
     Audit: {
-        Ok: function (id) {
-            if (!window.confirm("确定收到红包了吗？")) {
-                return
-            }
+        OK: function (id){
+            window.confirm('确定收到了！',"main.Audit._ok("+id+")",'_not()');
+        },
+        _not:function(){
+            
+        },
+        _ok: function (id) {
             var url = "/api/200/v1/todo/submit/" + id;
             this.id = "au_li_" + id;
             ajax.GET(url, this._auditOk.bind(this));
-            // main.goon()
         },
         _auditOk: function (msg) {
             if (msg.influence) {

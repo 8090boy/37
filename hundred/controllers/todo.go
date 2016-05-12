@@ -59,21 +59,32 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	// 产生自己的升级任务 开始
 	//
 	myAuMonad := new(model.Monad).ById(audit.MonadId)
+	// 收款单子增加一次收入
+	myAuMonad.Count = myAuMonad.Count + 1
+	myAuMonad.Edit()
 	// 任何单子级别大于6将不产生任务
 	if myAuMonad.Class == 7 {
 		result["influence"] = false
 		rep.WriteJson(result)
 		return
 	}
-	// 收款单子增加一次收入
-	myAuMonad.Count = myAuMonad.Count + 1
-	myAuMonad.Edit()
+	myRela := new(model.Relational).ById(audit.RelationalId)
+	if myRela == nil {
+		result["influence"] = true
+		rep.WriteJson(result)
+		return
+	}
+	result["influence"] = false
+	// 自己出局了，不会产生升级了
+	if myRela.Status == RELA_STATUS_Retired {
+		rep.WriteJson(result)
+		return
+	}
+
 	isOk := moandUpgrade(*myAuMonad) // 我的收款单子
 
 	if isOk {
 		result["influence"] = true
-	} else {
-		result["influence"] = false
 	}
 	rep.WriteJson(result)
 	return
@@ -157,9 +168,7 @@ func receiveAudit(audit model.Audit, user user.User) bool {
 	// 查找出对方单子信息
 	spendersMonad := new(model.Monad).ById(audit.ProposerMonadId)
 	myRela := new(model.Relational)
-	if myRela.Status == RELA_STATUS_Retired {
-		return false
-	}
+
 	// 审核者账户
 	// 是否特殊账户
 	if audit.Special == 1 {
@@ -170,7 +179,6 @@ func receiveAudit(audit model.Audit, user user.User) bool {
 
 	} else {
 		// 自己收入金额增加
-
 		myRela = myRela.ById(audit.RelationalId)
 		myRela.Income = myRela.Income + income
 		// 自己是否该出局了
@@ -236,14 +244,6 @@ func receiveAudit(audit model.Audit, user user.User) bool {
 	// 删除待确认信息
 	audit.Del(audit.Id)
 
-	// 自己出局了，不会产生升级了
-	if myRela.Status == RELA_STATUS_Retired {
-		return false
-	}
-
-	if audit.Special == 1 {
-		return true
-	}
 	return true
 }
 

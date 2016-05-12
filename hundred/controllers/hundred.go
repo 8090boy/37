@@ -62,15 +62,9 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	if relational.Referrer == "top" {
 		sweet["s"] = 1
 	}
-	// 是否出局
-	if relational.Status == RELA_STATUS_DISCARD || relational.Status == RELA_STATUS_Retired {
-		sweet["state"] = 2
-		all_info, _ := json.Marshal(sweet)
-		util.WriteJSONP(res, callback+"("+string(all_info)+")")
-		return
-	}
 
 	sweet["r"] = *relational
+
 	unfreezeDatetime := conf.Get("common", "unfreezeDatetime")
 	refHours, _ := time.ParseDuration(unfreezeDatetime)   // 未出单// s秒,m分,h小时,月
 	prevNewMonad := relational.PrevNewMonad.Add(refHours) // 剩余时间将冻结
@@ -78,21 +72,20 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 	// 有收过款的、不是股东、出过一次子单的间隔一定时间没有出单 ,会冻结
 	//my main monad
 	myMainmonad := new(model.Monad)
-	fmt.Println("--------my hundred 1------")
 
 	if relational.CurrentMonad > 0 {
 		myMainmonad = myMainmonad.ById(relational.CurrentMonad)
 	}
 
 	if myMainmonad == nil || relational.Status == RELA_STATUS_Retired || relational.Status == RELA_STATUS_DISCARD {
-		sweet["state"] = 99
+		sweet["m"] = *myMainmonad
+		sweet["state"] = 9
 		all_info, _ := json.Marshal(sweet)
 		util.WriteJSONP(res, callback+"("+string(all_info)+")")
 		return
 	}
 	// 升级主单
 	moandUpgrade(*myMainmonad)
-	fmt.Println("--------my hundred 2------")
 	// 有收益的普通会员
 	if relational.Income > 0 && relational.Referrer != "top" {
 		// 检查自己状态
@@ -209,8 +202,6 @@ var updateLock *sync.Mutex
 
 // monad升级
 func moandUpgrade(monad model.Monad) bool {
-	fmt.Println("---------moandUpgrade 0--------------")
-	fmt.Println(monad)
 	updateLock = new(sync.Mutex)
 	updateLock.Lock()
 	if monad.Id == 0 {
@@ -225,12 +216,10 @@ func moandUpgrade(monad model.Monad) bool {
 		}
 	}
 	rela := new(model.Relational).ById(monad.Pertain)
-	fmt.Println("---------moandUpgrade 2--------------")
 	// 收入大于 支出金额，才能产生任务
 	if !assertIncomeGTspending(*rela, monad) {
 		return false
 	}
-	fmt.Println("---------moandUpgrade 3--------------")
 	// 产生升级任务
 	// 产生升级任务
 	//升级到几级
@@ -251,7 +240,6 @@ func moandUpgrade(monad model.Monad) bool {
 		createAudit(&monad, nil, targetRelaAmin.Ssoid, false)
 		return true
 	}
-	fmt.Println("---------moandUpgrade 4--------------")
 
 	// 真正的收款人信息
 	_, targetRela, targetMainMonad := findURM(targetMonad.Pertain)
@@ -274,7 +262,6 @@ func moandUpgrade(monad model.Monad) bool {
 			return true
 		}
 	}
-	fmt.Println("---------moandUpgrade 5--------------")
 	createAudit(&monad, targetMonad, 0, false)
 	return true
 }
@@ -282,28 +269,23 @@ func moandUpgrade(monad model.Monad) bool {
 //收入 大于 总支出
 // monad 当前收款单子
 func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
-	fmt.Println("----------assertIncomeGTspending 1------------")
 	// 重点走下这个流程，仔细分析
 	if rela.Income == 0 {
 		return false
 	}
 
-	fmt.Println("----------assertIncomeGTspending 2------------")
 	if rela.Status != 1 {
 		return false
 	}
 
-	fmt.Println("----------assertIncomeGTspending 3------------")
 	if rela.CurrentMonad == 0 {
 		return false
 	}
 
-	fmt.Println("----------assertIncomeGTspending 4------------")
 	if currentMondUnfinished(&monad) {
 		return false
 	}
 
-	fmt.Println("----------assertIncomeGTspending 5------------")
 	// 级别为1级，并且收过两次款
 	if monad.Class == 1 {
 		if monad.Count == 1 {
@@ -313,7 +295,6 @@ func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
 		}
 	}
 
-	fmt.Println("----------assertIncomeGTspending 6------------")
 	// 是主单升级时
 	if (rela.CurrentMonad == monad.Id) && (monad.IsMain == 1) {
 		mulriple, _ := strconv.Atoi(conf.Get("common", "mulriple"))
@@ -322,7 +303,6 @@ func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
 		}
 	}
 
-	fmt.Println("----------assertIncomeGTspending 7------------")
 	// 预计支出金额
 	refSpending := INCOME[monad.Class+1]
 	// 总支出 = 实际已经支出 + 预计支出
@@ -333,7 +313,6 @@ func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
 	if rela.Income >= spendingSum {
 		return true
 	}
-	fmt.Println("----------assertIncomeGTspending 8------------")
 	return false
 }
 
