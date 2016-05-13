@@ -5,7 +5,7 @@ function ca(info) {
         return
     }
     if (info.state) {
-        window.my37 = info;
+        window.myinfo = info;
         document.addEventListener("DOMContentLoaded", main.goon, false)
     } else {
         cookie.Del("token");
@@ -15,83 +15,78 @@ function ca(info) {
 var main = {
 
     goon: function () {
-        var url = "/api/200/interaction?cb=main.mystart&v=" + uuid(6, 10);
+
+        var url = "/api/200/hundred?cb=main.mystart&v=" + uuid(6, 10);
         jQuery.getScript(url, null)
     },
     mystart: function (obj) {
         if (obj.s == 2) return location.href = "6.html"
+        window.my37 = new Object();
         for (var a in obj) {
             my37[a] = obj[a]
-        }
-        for (var a in my37) {
-            this[a] = my37[a]
         }
         var ui = document.body;
         ui.info = document.querySelector("#info");
         ui.plat = document.querySelector("#main").querySelector(".platform");
         this.ui = ui;
         this.showUi()
-        
     },
-    uTagStas: function () {
-        var uus = document.querySelectorAll("u");
-        for (var i = 0; i < uus.length; i++) {
-            var u = uus[i];
-            if (!u.innerText || u.innerText == 0) {
-                u.style.display = "none"
-            } else {
-                u.style.display = "inline-block"
-            }
-        }
-    },
-    showUi: function () {
-        document.querySelector("#info .username").innerText = my37.u.Alias || my37.u.Mobile;
-        document.querySelector("#info .wechat").innerText = my37.u.Wechat;
 
-        if (!this.r) {
+    showUi: function () {
+        document.querySelector("#info .username").innerText = myinfo.u.Alias || myinfo.u.Mobile;
+        document.querySelector("#info .wechat").innerText = myinfo.u.Wechat;
+
+        if (!my37.r) {
             return this.noHaveRela()
         }
-        if (!this.r.CurrentMonad) {
+        if (!my37.r.CurrentMonad) {
             return this.noState()
         }
-        if (!this.m) {
+        if (!my37.m) {
             return this.noState()
         }
-        if (!this.r.Status) {
+        if (!my37.r.Status) {
             return this.waitAccpcet()
         }
-        if (this.r.Status != 1 && this.r.Status != 9) {
-           this.showFreezeInfo(this.r.Status, "income")
-           this.Audit.UpdateTask()
-           this.uTagStas()
-           return
+        if (my37.r.Status != 1 && my37.r.Status != 9) {
+            this.showFreezeInfo(my37.r.Status, "income")
+            this.Audit.UpdateTask()
+            return
         }
 
-        this.MonadNormal()
+
         this.Audit.UpdateTask()
-        this.uTagStas()
+        this.MonadNormal()
 
     },
     MonadNormal: function () {
-        this.defaultCountUp(this.r.Income, this.r.Spending, this.r.Loss);
+        this.defaultCountUp(my37.r.Income, my37.r.Spending, my37.r.Loss);
         this._showStartTag();
-        if (this.r.Status == 9){
+        if (my37.r.Status == 9) {
             document.querySelector(".recommand").style.display = 'none'
             document.querySelector(".one").style.display = 'none'
             document.querySelector('.retire').style.display = 'block'
-            document.querySelector('#income').style.textDecoration='line-through'
-            
-            
-          return;
+            document.querySelector('#income').style.textDecoration = 'line-through'
+            return;
         }
-        if (this.todos) {
-            if (this.todos.length) {
-                document.querySelector("#todo").innerText = this.todos.length;
-                document.querySelector(".todo").className = "todo addRedpackage"
-                document.querySelector(".todo").style.display = 'block'
+        if (my37.todos && my37.todos.length > 0) {
+            var todocount = document.querySelector("#todo");
+            todocount.innerText = my37.todos.length;
+            var todo = document.querySelector(".todo")
+            todo.className = "todo addRedpackage"
+            todo.style.display = 'block'
+        } else {
+            var addRedpackage = document.querySelector(".addRedpackage")
+            var todo = document.querySelector(".todo")
+            if (addRedpackage) {
+                addRedpackage.className = "todo"
+                addRedpackage.style.display = 'none'
             }
+            if (todo) {
+                todo.style.display = 'none'
+            }
+            document.querySelector("#todo").innerText = 0
         }
-
     },
     showDFinfo: function () {
         var msg = my37;
@@ -131,7 +126,7 @@ var main = {
     },
     _addMonadPost: function (msg) {
         if (msg.ok) {
-            cookie.Set(my37.r.Mobile + "today", true, this.interval);
+            cookie.Set(my37.r.Mobile + "today", true, my37.interval);
             return alert("成功!")
         }
         this._copyTo37(msg);
@@ -160,7 +155,7 @@ var main = {
         location.reload()
     },
     todo: function () {
-        if (!this.todos) {
+        if (!my37.todos) {
             return
         }
         var warpAu = document.querySelector(".warpAu");
@@ -171,9 +166,9 @@ var main = {
             return
         }
         var auid = [];
-        for (var i = 0; i < this.todos.length; i++) {
-            if (this.todos[i].Id) {
-                auid.push(this.todos[i].Id)
+        for (var i = 0; i < my37.todos.length; i++) {
+            if (my37.todos[i].Id) {
+                auid.push(my37.todos[i].Id)
             }
         }
         var url = "/api/200/v1/todo/list?_=" + auid.join("|");
@@ -186,10 +181,10 @@ var main = {
         title.className = "tit titAu";
         var userinfo = document.querySelector("#info");
         userinfo.appendChild(title);
-        for (var i = 0; i < this.todos.length; i++) {
-            if (this.todos[i].Id && msg[this.todos[i].Id]) {
+        for (var i = 0; i < my37.todos.length; i++) {
+            if (my37.todos[i].Id && msg[my37.todos[i].Id]) {
                 var className = i % 2 ? "odd" : "even";
-                var refD = msg[this.todos[i].Id].split("|");
+                var refD = msg[my37.todos[i].Id].split("|");
                 var mob = refD[0]
                     , wechat = refD[1]
                     , alias = refD[2]
@@ -200,7 +195,7 @@ var main = {
                 var datee = date.split("+")[0];
                 alias = alias ? alias : "";
                 datee = datee.replace(/[T]/img, " ").replace(/[Z]/img, "");
-                htm.push('<li id="au_li_' + this.todos[i].Id + '" integral=' + sum + ' class="' + className + '" >');
+                htm.push('<li id="au_li_' + my37.todos[i].Id + '" integral=' + sum + ' class="' + className + '" >');
                 htm.push('<div class="redPackget" >');
                 htm.push('<h3 class="sum" >￥&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + sum + "</h3>");
                 var tempStr = "对方：" + cla + "&nbsp;级，";
@@ -209,8 +204,8 @@ var main = {
                 htm.push('<p class="wechat"  >微信：<b  onclick="copy()" >' + wechat + "</b></p>");
                 htm.push('<p class="mob"  >手机：<b  onclick="copy()" >' + mob + "</b></p>");
                 htm.push("<p>" + datee + "</p>");
-                htm.push('<u   onclick="main.Audit.OK(' + this.todos[i].Id + ')" >收到了</u>');
-                htm.push('<u class="not"  onclick="main.Audit.Not(' + this.todos[i].Id + ')" >没收到</u>');
+                htm.push('<u   onclick="main.Audit.OK(' + my37.todos[i].Id + ')" >收到了</u>');
+                htm.push('<u class="not"  onclick="main.Audit.Not(' + my37.todos[i].Id + ')" >没收到</u>');
                 htm.push("</div>");
                 htm.push("</li>")
             }
@@ -221,8 +216,9 @@ var main = {
         var df = document.createDocumentFragment();
         var body = document.body;
         var h = body.getBoundingClientRect().bottom - title.getBoundingClientRect().bottom;
-        df.appendChild(ul);
+        df.appendChild(ul)
         body.appendChild(df)
+        window.auditTodosCount = 0
     },
     _: function (dataArr, key, val) {
         for (var i = 0; i < dataArr.length; i++) {
@@ -380,11 +376,11 @@ var main = {
         }
     },
     Audit: {
-        OK: function (id){
-            window.confirm('确定收到了！',"main.Audit._ok("+id+")",'_not()');
+        OK: function (id) {
+            window.confirm('确定收到了！', "main.Audit._ok(" + id + ")", '_not()');
         },
-        _not:function(){
-            
+        _not: function () {
+
         },
         _ok: function (id) {
             var url = "/api/200/v1/todo/submit/" + id;
@@ -392,35 +388,22 @@ var main = {
             ajax.GET(url, this._auditOk.bind(this));
         },
         _auditOk: function (msg) {
-            if (msg.influence) {
-                my37.tasks = my37.tasks || [];
-                my37.tasks.push(msg.task);
-                var li = document.querySelector("#" + this.id);
-                var u = li.querySelector("u");
-                u.removeAttribute("onclick");
-                u.className = "auOk";
-                li.style.display = "none";
-                var integral = parseInt(li.getAttribute("integral"));
-                window.auOkCount = window.auOkCount || 0;
-                window.auOkCount = integral + window.auOkCount;
-                var lis = document.querySelectorAll(".warpAu li");
-                if (!lis.length) {
-                    main.Audit.CloseAutidsList()
-                }
-                var todoA = document.querySelector("#todo");
-                todoA.innerText = parseInt(todoA.innerText) - 1;
-                this.UpdateTask();
-                return
-            }
             var li = document.querySelector("#" + this.id);
             var integral = parseInt(li.getAttribute("integral"));
-            li.style.display = "none";
             window.auOkCount = window.auOkCount || 0;
             window.auOkCount = integral + window.auOkCount;
+            li.parentElement.removeChild(li)
             var lis = document.querySelectorAll(".warpAu li");
             if (!lis.length) {
                 main.Audit.CloseAutidsList()
             }
+            if (msg.influence) {
+                my37.tasks = my37.tasks || [];
+                my37.tasks.push(msg.task);
+                this.UpdateTask();
+            }
+            // 审核单子数量
+            window.auditTodosCount++
         },
         Not: function (id) {
             var liId = "au_li_" + id;
@@ -438,9 +421,12 @@ var main = {
         },
         UpdateTask: function () {
             var tasks = my37.tasks;
-            if (!tasks || !tasks.length) {
-                return
-            }
+            if (!tasks || !tasks.length) return;
+            var taskCount = document.querySelector(".task .one u")
+            taskCount.innerText = tasks.length;
+            taskCount.style.display = 'inline-block'
+            return;
+            /*
             var taskUi = document.querySelector(".task");
             var oneN = 0
                 , twoN = 0
@@ -475,19 +461,28 @@ var main = {
                 }
             }
             var one = taskUi.querySelector(".one u");
-            var two = taskUi.querySelector(".two u");
-            var three = taskUi.querySelector(".three u");
             oneN ? (one.innerText = oneN) : one.style.dispaly = "none";
-            twoN ? (two.innerText = twoN) : two.style.dispaly = "none";
-            threeN ? (three.innerText = threeN) : three.style.dispaly = "none"
+         */
         },
         CloseAutidsList: function () {
+
+            var todo = document.querySelector("#todo");
+            var count = parseInt(todo.innerText);
+            count = count - window.auditTodosCount;
+            if (count > 0) {
+                todo.innerText = count;
+            } else {
+                todo.innerText = 0;
+                var RedPackageList = document.querySelector(".addRedpackage");
+                RedPackageList.className = 'todo'
+                RedPackageList.style.display = 'none'
+            }
+
             document.querySelector(".warpAu").style.display = "none";
             document.querySelector(".titAu").style.display = "none";
             window.auOkCount = window.auOkCount || 0;
-            if (!window.auOkCount) {
-                return
-            }
+            if (!window.auOkCount) return
+
             var tmpCount = window.auOkCount + my37.r.Income;
             main.CountUpdate("income", tmpCount);
             main.goon()
@@ -515,11 +510,11 @@ var main = {
         var el = document.querySelector("#" + id);
         el.className = "freeze";
         if (no === 2) {
-            var ref = this.m.UnFreeze.split("T");
+            var ref = my37.m.UnFreeze.split("T");
             var day = ref[0];
             var hourRef = ref[1].split(":");
             var hour = hourRef[0] + ":" + hourRef[1];
-            el.innerHTML = "未按时出单已冻结，请在：<br>" + day + " " + hour + "之前出完&nbsp;" + this.m.UnfreezePeriodCount + "&nbsp;单解冻；<br>逾期未解冻，该帐号将被注销！"
+            el.innerHTML = "未按时出单已冻结，请在：<br>" + day + " " + hour + "之前出完&nbsp;" + my37.m.UnfreezePeriodCount + "&nbsp;单解冻；<br>逾期未解冻，该帐号将被注销！"
         }
         if (no === 4) {
             el.innerHTML = "任务数超限额被冻结，<br>请完成任务！否则将无限期冻结！"
@@ -582,7 +577,6 @@ var my = {
             surface.on("main");
             return
         }
-        this.user = window.my37.u;
         surface.on("my");
         var inputArr = document.querySelector("#my").querySelectorAll("input,textarea");
         for (var i = 0; i < inputArr.length; i++) {
@@ -590,14 +584,14 @@ var my = {
         }
     },
     setDefault: function (el, index) {
-        if (this.user[el.name]) {
+        if (myinfo.u[el.name]) {
             if (el.name.toLowerCase() === "password") {
                 el.value = ""
             } else {
-                el.value = this.user[el.name] || ""
+                el.value = myinfo.u[el.name] || ""
             }
         } else {
-            el.value = window.my37.r[el.name] || ""
+            el.value = my37.r[el.name] || ""
         }
     },
     friendster: function (e) {

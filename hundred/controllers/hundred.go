@@ -357,9 +357,8 @@ func _autoCreateMonad(myUser *user.User, myRelational *model.Relational, myMainM
 	myMonad := model.NewMonad()
 	myMonad.Pertain = myRelational.Id
 	myMonad.MainMonad = myRelational.CurrentMonad
-	//
 	parentRela, parMonad, flag := newSub(myMonad, myRelational, myMainMonad)
-	// 没有位置
+	// 出单失败
 	if !flag {
 		return false
 	}

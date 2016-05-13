@@ -57,24 +57,23 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 	// 产生自己的升级任务 开始
 	// 产生自己的升级任务 开始
 	// 产生自己的升级任务 开始
-	//
+	result["influence"] = false
 	myAuMonad := new(model.Monad).ById(audit.MonadId)
 	// 收款单子增加一次收入
 	myAuMonad.Count = myAuMonad.Count + 1
 	myAuMonad.Edit()
-	// 任何单子级别大于6将不产生任务
-	if myAuMonad.Class == 7 {
-		result["influence"] = false
+	// 任何单子级别是最大层时不在升级
+	maxLayer, _ := strconv.Atoi(conf.Get("common", "maxLayer"))
+	if myAuMonad.Class == maxLayer {
 		rep.WriteJson(result)
 		return
 	}
 	myRela := new(model.Relational).ById(audit.RelationalId)
 	if myRela == nil {
-		result["influence"] = true
 		rep.WriteJson(result)
 		return
 	}
-	result["influence"] = false
+
 	// 自己出局了，不会产生升级了
 	if myRela.Status == RELA_STATUS_Retired {
 		rep.WriteJson(result)

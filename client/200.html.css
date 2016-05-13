@@ -460,7 +460,7 @@ html {
 }
 
 .platform .task div u {
-    display: inline-block;
+    display: none;
     position: absolute;
     right: 1em;
     top: 2em;

@@ -93,7 +93,7 @@ func main() {
 	}
 	api.SetApp(router)
 	http.HandleFunc("/myinfo", controller.Myinfo)
-	http.HandleFunc("/interaction", controller.Myrelational)
+	http.HandleFunc("/hundred", controller.Myrelational)
 	http.HandleFunc("/login", controller.Login)   //login
 	http.HandleFunc("/signin", controller.Signin) //reg
 	http.Handle("/v1/", http.StripPrefix("/v1", api.MakeHandler()))
