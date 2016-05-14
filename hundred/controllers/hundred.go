@@ -182,7 +182,6 @@ func Myrelational(res http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
-	fmt.Println("--------my hundred 3------")
 	// 我的任务
 	myTask, count := new(model.Audit).AuditsByPropRela(relational.Id)
 	if count > 0 {
@@ -207,7 +206,6 @@ func moandUpgrade(monad model.Monad) bool {
 	if monad.Id == 0 {
 		return false
 	}
-	fmt.Println("---------moandUpgrade 1--------------")
 	if monad.IsMain == 1 {
 		// 需要推荐人员数量限制
 		isOk, _, _ := mainMonadTask(&monad)
@@ -228,6 +226,7 @@ func moandUpgrade(monad model.Monad) bool {
 	income := INCOME[targetLayer]
 	// 出一次单增加一次任务
 	monad.Task = monad.Task + 1
+
 	monad.Edit()
 	updateLock.Unlock()
 	targetMonad := findParentMonad(&monad, targetLayer)
@@ -298,19 +297,19 @@ func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
 	// 是主单升级时
 	if (rela.CurrentMonad == monad.Id) && (monad.IsMain == 1) {
 		mulriple, _ := strconv.Atoi(conf.Get("common", "mulriple"))
-		if monad.Count == (mulriple*monad.Class)-1 {
+		if monad.Class < 3 {
 			return true
 		}
 	}
 
 	// 预计支出金额
 	refSpending := INCOME[monad.Class+1]
-	// 总支出 = 实际已经支出 + 预计支出
+	// +实际已经支出
 	spendingSum := rela.Spending + refSpending
-	// 总支出 = 加上待确认的支出
+	// +待确认的支出
 	spendingSum = spendingSum + taskSum(&rela)
 	// 总收入大于总支出
-	if rela.Income >= spendingSum {
+	if rela.Income > spendingSum {
 		return true
 	}
 	return false

@@ -53,6 +53,7 @@ func SubmitTodo(rep rest.ResponseWriter, req *rest.Request) {
 		rep.WriteJson("ok")
 		return
 	}
+
 	//
 	// 产生自己的升级任务 开始
 	// 产生自己的升级任务 开始
