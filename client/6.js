@@ -12,7 +12,7 @@ function ca(my) {
 var main = {
      goon :function(){
         var ref = Math.random() * 10000
-        var url = '/api/'+ paltform +'/interaction?cb=main.init&v=' + ref.toFixed(0)
+        var url = '/api/'+ paltform +'/hundred?cb=main.init&v=' + ref.toFixed(0)
         jQuery.get(url,null)
     },
     init: function (obj) {
