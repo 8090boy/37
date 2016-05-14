@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"sso/user"
 	"strings"
@@ -296,7 +295,6 @@ func assertIncomeGTspending(rela model.Relational, monad model.Monad) bool {
 
 	// 是主单升级时
 	if (rela.CurrentMonad == monad.Id) && (monad.IsMain == 1) {
-		mulriple, _ := strconv.Atoi(conf.Get("common", "mulriple"))
 		if monad.Class < 3 {
 			return true
 		}
