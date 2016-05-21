@@ -228,6 +228,7 @@ func moandUpgrade(monad model.Monad) bool {
 
 	monad.Edit()
 	updateLock.Unlock()
+	//真正的收款的单子
 	targetMonad := findParentMonad(&monad, targetLayer)
 	var targetRelaAmin *manage.Relaadmin
 	// 审核方单子不存在
@@ -244,10 +245,10 @@ func moandUpgrade(monad model.Monad) bool {
 	// 收款方主单或子单，rela状态不正常
 	tarMainMoSata := targetRela.Status != 1
 	// 收款方主或子单级别  小于 付款方单子级别
-	tarMainMoClass := (targetMainMonad.Class < monad.Class) || (targetMonad.Class < monad.Class)
+	tarMainMoClass := (targetMainMonad.Class <= monad.Class) || (targetMonad.Class <= monad.Class)
 	// 是符合要求
 	if tarMainMoSata || tarMainMoClass {
-		// 由于以上两个条件不符合，真正的收款方需要增加损失
+		//以上两个条件不符合，真正的收款方需要增加损失
 		targetRela.Loss = targetRela.Loss + income
 		targetRela.UpdateByColsName("loss")
 		if strings.ToLower(targetRela.Referrer) == "top" {
