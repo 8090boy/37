@@ -466,26 +466,22 @@ var main = {
         },
         CloseAutidsList: function () {
 
-            var todo = document.querySelector("#todo");
-            var count = parseInt(todo.innerText);
-            count = count - window.auditTodosCount;
-            if (count > 0) {
-                todo.innerText = count;
-            } else {
-                todo.innerText = 0;
-                var RedPackageList = document.querySelector(".addRedpackage");
-                RedPackageList.className = 'todo'
-                RedPackageList.style.display = 'none'
-            }
+            // var todo = document.querySelector("#todo");
+            // var count = parseInt(todo.innerText);
+            // count = count - window.auditTodosCount;
+            // if (count > 0) {
+            //     todo.innerText = count;
+            // } else {
+            //     todo.innerText = 0;
+            //     var RedPackageList = document.querySelector(".addRedpackage");
+            //     RedPackageList.className = 'todo'
+            //     RedPackageList.style.display = 'none'
+            // }
 
             document.querySelector(".warpAu").style.display = "none";
             document.querySelector(".titAu").style.display = "none";
-            window.auOkCount = window.auOkCount || 0;
-            if (!window.auOkCount) return
-
-            var tmpCount = window.auOkCount + my37.r.Income;
-            main.CountUpdate("income", tmpCount);
             main.goon()
+            
         }
     },
     defaultCountUp: function (i, s, l) {
